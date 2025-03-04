@@ -1,4 +1,4 @@
-"use server"
+"use server";
 
 import {
   Document,
@@ -10,45 +10,53 @@ import {
   ImageRun,
   convertInchesToTwip,
   PageBreak,
-} from "docx"
-import { Packer } from "docx"
+} from "docx";
+import { Packer } from "docx";
 
 export async function generateDocument(formData: FormData) {
-  const name = formData.get("name") as string
-  const rollNo = formData.get("rollNo") as string
-  const course = formData.get("course") as string
+  const name = formData.get("name") as string;
+  const rollNo = formData.get("rollNo") as string;
+  const course = formData.get("course") as string;
 
-  const practicals = []
-  let pIndex = 0
+  const practicals = [];
+  let pIndex = 0;
   while (formData.has(`practical_${pIndex}_no`)) {
-    const practicalNo = formData.get(`practical_${pIndex}_no`) as string
-    const aim = formData.get(`practical_${pIndex}_aim`) as string
-    const conclusion = formData.get(`practical_${pIndex}_conclusion`) as string
+    const practicalNo = formData.get(`practical_${pIndex}_no`) as string;
+    const aim = formData.get(`practical_${pIndex}_aim`) as string;
+    const conclusion = formData.get(`practical_${pIndex}_conclusion`) as string;
 
     // Get questions with question text
-    const questions = []
-    let qIndex = 0
+    const questions = [];
+    let qIndex = 0;
     while (formData.has(`practical_${pIndex}_question_${qIndex}_number`)) {
       questions.push({
-        number: formData.get(`practical_${pIndex}_question_${qIndex}_number`) as string,
-        questionText: formData.get(`practical_${pIndex}_question_${qIndex}_questionText`) as string,
-        code: formData.get(`practical_${pIndex}_question_${qIndex}_code`) as string,
-      })
-      qIndex++
+        number: formData.get(
+          `practical_${pIndex}_question_${qIndex}_number`,
+        ) as string,
+        questionText: formData.get(
+          `practical_${pIndex}_question_${qIndex}_questionText`,
+        ) as string,
+        code: formData.get(
+          `practical_${pIndex}_question_${qIndex}_code`,
+        ) as string,
+      });
+      qIndex++;
     }
 
     // Get outputs
-    const outputs = []
-    let oIndex = 0
+    const outputs = [];
+    let oIndex = 0;
     while (formData.has(`practical_${pIndex}_output_${oIndex}`)) {
-      const outputFile = formData.get(`practical_${pIndex}_output_${oIndex}`) as File
-      const arrayBuffer = await outputFile.arrayBuffer()
-      outputs.push(Buffer.from(arrayBuffer))
-      oIndex++
+      const outputFile = formData.get(
+        `practical_${pIndex}_output_${oIndex}`,
+      ) as File;
+      const arrayBuffer = await outputFile.arrayBuffer();
+      outputs.push(Buffer.from(arrayBuffer));
+      oIndex++;
     }
 
-    practicals.push({ practicalNo, aim, questions, outputs, conclusion })
-    pIndex++
+    practicals.push({ practicalNo, aim, questions, outputs, conclusion });
+    pIndex++;
   }
 
   const doc = new Document({
@@ -216,7 +224,7 @@ export async function generateDocument(formData: FormData) {
                       width: 600,
                       height: 400,
                     },
-                    type: 'png',
+                    type: "png",
                   }),
                 ],
               }),
@@ -257,9 +265,9 @@ export async function generateDocument(formData: FormData) {
         ]),
       },
     ],
-  })
+  });
 
-  const buffer = await Packer.toBuffer(doc)
-  const base64 = buffer.toString("base64")
-  return base64
+  const buffer = await Packer.toBuffer(doc);
+  const base64 = buffer.toString("base64");
+  return base64;
 }

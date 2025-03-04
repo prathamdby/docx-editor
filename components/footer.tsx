@@ -1,7 +1,7 @@
-"use client"
-import { Github, Twitter, Linkedin } from "lucide-react"
-import Link from "next/link"
-import Image from "next/image"
+"use client";
+import { Github, Twitter, Linkedin } from "lucide-react";
+import Link from "next/link";
+import Image from "next/image";
 
 export function Footer() {
   return (
@@ -19,7 +19,8 @@ export function Footer() {
               />
             </div>
             <p className="text-sm text-white/60">
-              Created with ♥️ by <span className="font-semibold text-white">Pratham</span>
+              Created with ♥️ by{" "}
+              <span className="font-semibold text-white">Pratham</span>
             </p>
           </div>
           <div className="flex items-center gap-4">
@@ -54,5 +55,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  )
+  );
 }

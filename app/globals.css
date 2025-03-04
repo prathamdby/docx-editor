@@ -16,4 +16,3 @@
     animation-delay: calc(var(--index, 0) * 130ms);
   }
 }
-
