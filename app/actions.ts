@@ -217,6 +217,7 @@ export async function generateDocument(formData: FormData) {
                       width: 600,
                       height: 400,
                     },
+                    type: 'png',
                   }),
                 ],
               }),
@@ -263,4 +264,3 @@ export async function generateDocument(formData: FormData) {
   const base64 = buffer.toString("base64")
   return base64
 }
-
