@@ -1,6 +1,7 @@
 "use client"
 import { Github, Twitter, Linkedin } from "lucide-react"
 import Link from "next/link"
+import Image from "next/image"
 
 export function Footer() {
   return (
@@ -9,9 +10,11 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
             <div className="h-8 w-8 overflow-hidden rounded-full">
-              <img
+              <Image
                 src="https://avatars.githubusercontent.com/u/134331217?v=4"
                 alt="Creator avatar"
+                width={32}
+                height={32}
                 className="h-full w-full object-cover"
               />
             </div>
@@ -53,4 +56,3 @@ export function Footer() {
     </footer>
   )
 }
-

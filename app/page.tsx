@@ -1,6 +1,7 @@
 "use client" // This component uses hooks and browser APIs
 
 import { useState } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -97,7 +98,7 @@ export default function DocumentEditor() {
     }))
   }
 
-  const handlePracticalChange = (index: number, field: keyof Practical, value: any) => {
+  const handlePracticalChange = (index: number, field: keyof Practical, value: string | Question[] | File[]) => {
     setPracticals((prev) => prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)))
   }
 
@@ -424,11 +425,14 @@ export default function DocumentEditor() {
                               <div className="grid grid-cols-3 gap-2 mb-2">
                                 {practical.outputs.map((output, oIndex) => (
                                   <div key={oIndex} className="relative group">
-                                    <img
-                                      src={URL.createObjectURL(output) || "/placeholder.svg"}
-                                      alt={`Output ${oIndex + 1}`}
-                                      className="w-full h-24 object-cover rounded-lg border border-white/10"
-                                    />
+                                    <div className="relative w-full h-24">
+                                      <Image
+                                        src={URL.createObjectURL(output) || "/placeholder.svg"}
+                                        alt={`Output ${oIndex + 1}`}
+                                        fill
+                                        className="object-cover rounded-lg border border-white/10"
+                                      />
+                                    </div>
                                     <button
                                       type="button"
                                       onClick={() => removeOutput(pIndex, oIndex)}
@@ -546,12 +550,14 @@ export default function DocumentEditor() {
                             <p className="font-bold underline">OUTPUT:</p>
                             <div className="grid grid-cols-3 gap-4 mt-2">
                               {practical.outputs.map((output, oIndex) => (
-                                <img
-                                  key={oIndex}
-                                  src={URL.createObjectURL(output) || "/placeholder.svg"}
-                                  alt={`Output ${oIndex + 1}`}
-                                  className="max-w-full h-auto border rounded-lg"
-                                />
+                                <div key={oIndex} className="relative h-48">
+                                  <Image
+                                    src={URL.createObjectURL(output) || "/placeholder.svg"}
+                                    alt={`Output ${oIndex + 1}`}
+                                    fill
+                                    className="object-contain border rounded-lg"
+                                  />
+                                </div>
                               ))}
                             </div>
                           </div>
@@ -574,4 +580,3 @@ export default function DocumentEditor() {
     </div>
   )
 }
-
