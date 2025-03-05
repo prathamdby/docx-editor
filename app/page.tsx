@@ -8,10 +8,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { generateDocument } from "./actions";
-import { Plus, Minus, X, ImageIcon, FileText } from "lucide-react";
+import { Plus, Minus, X, ImageIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { BokehBackground } from "@/components/bokeh-background";
 import { Footer } from "@/components/footer";
+import { Header } from "@/components/header";
 
 interface Question {
   number: string;
@@ -240,35 +241,11 @@ export default function DocumentEditor() {
       />
 
       <div className="relative flex-1 flex flex-col">
-        {/* Navigation */}
-        <div className="border-b border-white/10 bg-white/5 backdrop-blur-xl">
-          <div className="max-w-[1400px] mx-auto px-4 py-3">
-            <div className="flex items-center space-x-2">
-              <FileText className="h-8 w-8 text-white" />
-              <span className="text-xl font-semibold">DocX Editor</span>
-            </div>
-          </div>
+        <div className="pt-8 sm:pt-12 relative">
+          <Header />
         </div>
 
-        {/* Hero Section */}
-        <div className="py-20 text-center relative">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="max-w-4xl mx-auto px-4 space-y-6"
-          >
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mx-auto max-w-[18ch]">
-              Document generation with dynamic intelligence.
-            </h1>
-            <p className="text-lg text-gray-400 max-w-2xl mx-auto">
-              Generate beautifully formatted practical documents in seconds with
-              our intelligent document generator.
-            </p>
-          </motion.div>
-        </div>
-
-        {/* Main Content */}
-        <div className="max-w-[1400px] mx-auto pb-20 px-4">
+        <div className="max-w-[1400px] mx-auto pb-20 px-4 mt-16 sm:mt-24">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-6 xl:grid-cols-5">
               {/* Editor Section */}
