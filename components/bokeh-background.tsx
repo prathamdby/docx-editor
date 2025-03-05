@@ -64,7 +64,7 @@ export function BokehBackground() {
           0,
           circle.x,
           circle.y,
-          circle.radius,
+          circle.radius
         );
         gradient.addColorStop(0, circle.color);
         gradient.addColorStop(1, "transparent");
@@ -86,7 +86,7 @@ export function BokehBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none"
+      className="pointer-events-none fixed inset-0"
       style={{ zIndex: 0 }}
     />
   );

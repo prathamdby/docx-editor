@@ -45,21 +45,21 @@ export default function DocumentEditor() {
       formDataObj.append(`practical_${pIndex}_aim`, practical.aim);
       formDataObj.append(
         `practical_${pIndex}_conclusion`,
-        practical.conclusion,
+        practical.conclusion
       );
 
       practical.questions.forEach((question, qIndex) => {
         formDataObj.append(
           `practical_${pIndex}_question_${qIndex}_number`,
-          question.number,
+          question.number
         );
         formDataObj.append(
           `practical_${pIndex}_question_${qIndex}_questionText`,
-          question.questionText,
+          question.questionText
         );
         formDataObj.append(
           `practical_${pIndex}_question_${qIndex}_code`,
-          question.code,
+          question.code
         );
       });
 
@@ -75,7 +75,7 @@ export default function DocumentEditor() {
         [Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))],
         {
           type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-        },
+        }
       );
 
       const url = window.URL.createObjectURL(blob);
@@ -94,7 +94,7 @@ export default function DocumentEditor() {
   }
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setFormData((prev) => ({
       ...prev,
@@ -105,10 +105,10 @@ export default function DocumentEditor() {
   const handlePracticalChange = (
     index: number,
     field: keyof Practical,
-    value: string | Question[] | File[],
+    value: string | Question[] | File[]
   ) => {
     setPracticals((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, [field]: value } : p)),
+      prev.map((p, i) => (i === index ? { ...p, [field]: value } : p))
     );
   };
 
@@ -116,7 +116,7 @@ export default function DocumentEditor() {
     practicalIndex: number,
     questionIndex: number,
     field: keyof Question,
-    value: string,
+    value: string
   ) => {
     setPracticals((prev) =>
       prev.map((p, i) => {
@@ -129,7 +129,7 @@ export default function DocumentEditor() {
           return { ...p, questions: newQuestions };
         }
         return p;
-      }),
+      })
     );
   };
 
@@ -150,7 +150,7 @@ export default function DocumentEditor() {
           };
         }
         return p;
-      }),
+      })
     );
   };
 
@@ -161,18 +161,18 @@ export default function DocumentEditor() {
           return {
             ...p,
             questions: p.questions.filter(
-              (_, qIndex) => qIndex !== questionIndex,
+              (_, qIndex) => qIndex !== questionIndex
             ),
           };
         }
         return p;
-      }),
+      })
     );
   };
 
   const handleFileChange = (
     practicalIndex: number,
-    e: React.ChangeEvent<HTMLInputElement>,
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const files = Array.from(e.target.files || []);
     setPracticals((prev) =>
@@ -182,7 +182,7 @@ export default function DocumentEditor() {
           return { ...p, outputs: newOutputs };
         }
         return p;
-      }),
+      })
     );
   };
 
@@ -196,7 +196,7 @@ export default function DocumentEditor() {
           };
         }
         return p;
-      }),
+      })
     );
   };
 
@@ -218,7 +218,7 @@ export default function DocumentEditor() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0A0B14] text-white relative overflow-hidden flex flex-col">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#0A0B14] text-white">
       <BokehBackground />
       {/* Background Grid Pattern */}
       <div
@@ -226,16 +226,16 @@ export default function DocumentEditor() {
         style={{ opacity: 0.5 }}
       />
 
-      <div className="relative flex-1 flex flex-col">
-        <div className="pt-8 sm:pt-12 relative">
+      <div className="relative flex flex-1 flex-col">
+        <div className="relative pt-8 sm:pt-12">
           <Header />
         </div>
 
-        <div className="max-w-[1400px] mx-auto pb-24 px-4 mt-16">
-          <div className="max-w-6xl mx-auto">
-            <div className="grid lg:grid-cols-2 gap-6 xl:grid-cols-5">
+        <div className="mx-auto mt-16 max-w-[1400px] px-4 pb-24">
+          <div className="mx-auto max-w-6xl">
+            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-5">
               {/* Editor Section */}
-              <Card className="p-6 border border-white/10 bg-white/5 backdrop-blur-xl xl:col-span-2">
+              <Card className="border border-white/10 bg-white/5 p-6 backdrop-blur-xl xl:col-span-2">
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <StudentForm formData={formData} onChange={handleChange} />
                   <div className="space-y-4">
@@ -252,7 +252,7 @@ export default function DocumentEditor() {
                               pIndex,
                               questionIndex,
                               field,
-                              value,
+                              value
                             )
                           }
                           onAddQuestion={() => addQuestion(pIndex)}
@@ -271,7 +271,7 @@ export default function DocumentEditor() {
                     <Button
                       type="button"
                       onClick={addPractical}
-                      className="w-full bg-white/5 border-white/10 text-white hover:bg-white/10"
+                      className="w-full border-white/10 bg-white/5 text-white hover:bg-white/10"
                       variant="secondary"
                     >
                       <Plus className="mr-2 h-4 w-4" />
@@ -291,8 +291,8 @@ export default function DocumentEditor() {
               </Card>
 
               {/* Preview Section */}
-              <Card className="lg:h-[800px] border border-white/10 bg-white/5 backdrop-blur-xl xl:col-span-3 flex flex-col">
-                <div className="sticky top-0 z-10 p-4 border-b border-white/10 bg-black/20 backdrop-blur">
+              <Card className="flex flex-col border border-white/10 bg-white/5 backdrop-blur-xl lg:h-[800px] xl:col-span-3">
+                <div className="sticky top-0 z-10 border-b border-white/10 bg-black/20 p-4 backdrop-blur">
                   <h2 className="text-sm font-medium text-white">Preview</h2>
                 </div>
                 <DocumentPreview

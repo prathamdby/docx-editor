@@ -34,9 +34,9 @@ export function QuestionForm({
       exit={{ opacity: 0, height: 0 }}
       className="space-y-2"
     >
-      <Card className="p-3 bg-white/5 border-white/10">
-        <div className="flex justify-between items-start mb-2">
-          <div className="w-full mr-2">
+      <Card className="border-white/10 bg-white/5 p-3">
+        <div className="mb-2 flex items-start justify-between">
+          <div className="mr-2 w-full">
             <Label htmlFor="question-number" className="text-white">
               Question Number
             </Label>
@@ -45,7 +45,7 @@ export function QuestionForm({
               value={question.number}
               onChange={(e) => onQuestionChange("number", e.target.value)}
               required
-              className="mt-1.5 bg-white/[0.07] border-white/10 text-white focus:bg-white/10"
+              className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
             />
           </div>
           {canRemove && (
@@ -53,7 +53,7 @@ export function QuestionForm({
               type="button"
               variant="ghost"
               size="icon"
-              className="mt-7 text-white hover:bg-white/5 backdrop-blur-sm"
+              className="mt-7 text-white backdrop-blur-sm hover:bg-white/5"
               onClick={onRemove}
             >
               <X className="h-4 w-4" />
@@ -69,7 +69,7 @@ export function QuestionForm({
               id="question-text"
               value={question.questionText}
               onChange={(e) => onQuestionChange("questionText", e.target.value)}
-              className="mt-1.5 bg-white/[0.07] border-white/10 text-white focus:bg-white/10"
+              className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
               required
               placeholder="Write your question here..."
             />
@@ -82,7 +82,7 @@ export function QuestionForm({
               id="question-code"
               value={question.code}
               onChange={(e) => onQuestionChange("code", e.target.value)}
-              className="font-mono min-h-[200px] mt-1.5 bg-white/[0.07] border-white/10 text-white focus:bg-white/10"
+              className="mt-1.5 min-h-[200px] border-white/10 bg-white/[0.07] font-mono text-white focus:bg-white/10"
               required
               placeholder="Write your code here..."
             />

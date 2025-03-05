@@ -32,9 +32,9 @@ export function DocumentPreview({
   practicals,
 }: DocumentPreviewProps) {
   return (
-    <div className="relative bg-white rounded-lg shadow-2xl mx-6 mt-6 mb-6 overflow-y-auto flex-grow">
+    <div className="relative mx-6 mb-6 mt-6 flex-grow overflow-y-auto rounded-lg bg-white shadow-2xl">
       <div className="relative p-8">
-        <div className="max-w-[8.5in] mx-auto space-y-6 font-['Times_New_Roman'] text-black">
+        <div className="mx-auto max-w-[8.5in] space-y-6 font-['Times_New_Roman'] text-black">
           <div className="text-right">
             <p>{studentData.name}</p>
             <p>Roll no. {studentData.rollNo}</p>
@@ -42,7 +42,7 @@ export function DocumentPreview({
           </div>
 
           {practicals.map((practical, pIndex) => (
-            <div key={pIndex} className="space-y-6 mt-8">
+            <div key={pIndex} className="mt-8 space-y-6">
               <div className="text-center">
                 <h1 className="text-xl font-bold underline">
                   PRACTICAL No. {practical.practicalNo}
@@ -66,7 +66,7 @@ export function DocumentPreview({
                   </div>
                   <div>
                     <p className="font-bold">Code:</p>
-                    <pre className="font-mono text-sm whitespace-pre-wrap mt-2 bg-gray-50 p-4 rounded-lg">
+                    <pre className="mt-2 whitespace-pre-wrap rounded-lg bg-gray-50 p-4 font-mono text-sm">
                       {question.code}
                     </pre>
                   </div>
@@ -75,14 +75,14 @@ export function DocumentPreview({
 
               <div>
                 <p className="font-bold underline">OUTPUT:</p>
-                <div className="grid grid-cols-3 gap-4 mt-2">
+                <div className="mt-2 grid grid-cols-3 gap-4">
                   {practical.outputs.map((output, oIndex) => (
                     <div key={oIndex} className="relative h-48">
                       <Image
                         src={URL.createObjectURL(output)}
                         alt={`Output ${oIndex + 1}`}
                         fill
-                        className="object-contain border rounded-lg"
+                        className="rounded-lg border object-contain"
                       />
                     </div>
                   ))}

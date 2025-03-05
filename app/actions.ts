@@ -31,13 +31,13 @@ export async function generateDocument(formData: FormData) {
     while (formData.has(`practical_${pIndex}_question_${qIndex}_number`)) {
       questions.push({
         number: formData.get(
-          `practical_${pIndex}_question_${qIndex}_number`,
+          `practical_${pIndex}_question_${qIndex}_number`
         ) as string,
         questionText: formData.get(
-          `practical_${pIndex}_question_${qIndex}_questionText`,
+          `practical_${pIndex}_question_${qIndex}_questionText`
         ) as string,
         code: formData.get(
-          `practical_${pIndex}_question_${qIndex}_code`,
+          `practical_${pIndex}_question_${qIndex}_code`
         ) as string,
       });
       qIndex++;
@@ -48,7 +48,7 @@ export async function generateDocument(formData: FormData) {
     let oIndex = 0;
     while (formData.has(`practical_${pIndex}_output_${oIndex}`)) {
       const outputFile = formData.get(
-        `practical_${pIndex}_output_${oIndex}`,
+        `practical_${pIndex}_output_${oIndex}`
       ) as File;
       const arrayBuffer = await outputFile.arrayBuffer();
       outputs.push(Buffer.from(arrayBuffer));
@@ -197,7 +197,7 @@ export async function generateDocument(formData: FormData) {
                       font: { name: "Courier New" },
                     }),
                   ],
-                }),
+                })
             ),
           ]),
 
@@ -227,7 +227,7 @@ export async function generateDocument(formData: FormData) {
                     type: "png",
                   }),
                 ],
-              }),
+              })
           ),
 
           // Conclusion

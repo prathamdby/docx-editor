@@ -19,25 +19,25 @@ export function OutputGallery({
 }: OutputGalleryProps) {
   return (
     <div>
-      <div className="flex justify-between items-center mb-2">
+      <div className="mb-2 flex items-center justify-between">
         <Label className="text-white">Output Screenshots (Max 3)</Label>
         <span className="text-sm text-gray-400">{outputs.length}/3</span>
       </div>
-      <div className="grid grid-cols-3 gap-2 mb-2">
+      <div className="mb-2 grid grid-cols-3 gap-2">
         {outputs.map((output, index) => (
-          <div key={index} className="relative group">
-            <div className="relative w-full h-24">
+          <div key={index} className="group relative">
+            <div className="relative h-24 w-full">
               <Image
                 src={URL.createObjectURL(output)}
                 alt={`Output ${index + 1}`}
                 fill
-                className="object-cover rounded-lg border border-white/10"
+                className="rounded-lg border border-white/10 object-cover"
               />
             </div>
             <button
               type="button"
               onClick={() => onRemoveOutput(index)}
-              className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+              className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
             >
               <X className="h-3 w-3" />
             </button>
@@ -56,11 +56,11 @@ export function OutputGallery({
             <Button
               type="button"
               variant="secondary"
-              className="w-full h-24 bg-white/5 border-white/10 text-white hover:bg-white/10"
+              className="h-24 w-full border-white/10 bg-white/5 text-white hover:bg-white/10"
               onClick={() => document.getElementById("output-upload")?.click()}
             >
               <div className="flex flex-col items-center">
-                <ImageIcon className="h-6 w-6 mb-1" />
+                <ImageIcon className="mb-1 h-6 w-6" />
                 <span className="text-xs">Add Image</span>
               </div>
             </Button>

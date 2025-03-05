@@ -17,7 +17,7 @@ interface StudentFormProps {
 export function StudentForm({ formData, onChange }: StudentFormProps) {
   return (
     <div className="space-y-4">
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <Label htmlFor="name" className="text-white">
             Name
@@ -28,7 +28,7 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
             value={formData.name}
             onChange={onChange}
             required
-            className="mt-1.5 bg-white/[0.07] border-white/10 text-white focus:bg-white/10"
+            className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
           />
         </div>
         <div>
@@ -41,7 +41,7 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
             value={formData.rollNo}
             onChange={onChange}
             required
-            className="mt-1.5 bg-white/[0.07] border-white/10 text-white focus:bg-white/10"
+            className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
           />
         </div>
       </div>
@@ -55,7 +55,7 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
           value={formData.course}
           onChange={onChange}
           required
-          className="mt-1.5 bg-white/[0.07] border-white/10 text-white focus:bg-white/10"
+          className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
         />
       </div>
     </div>

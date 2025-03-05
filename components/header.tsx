@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 export const Header = () => {
   return (
     <>
-      <div className="mb-10 sm:mb-16 flex items-center justify-center gap-3">
+      <div className="mb-10 flex items-center justify-center gap-3 sm:mb-16">
         <PenLine className="h-8 w-8 text-white/90" />
         <span className="text-gradient text-xl font-semibold">Editor</span>
       </div>
