@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <body
         className={`${roboto.variable} min-h-screen bg-gradient-to-b from-black via-pink-950/80 to-black font-sans text-white antialiased`}
       >
