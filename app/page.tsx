@@ -227,9 +227,9 @@ export default function DocumentEditor() {
 
         <div className="mx-auto mt-16 max-w-[1400px] px-6 pb-24 sm:px-8 lg:px-4">
           <div className="mx-auto max-w-6xl">
-            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-5">
+            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-10">
               {/* Editor Section */}
-              <div className="xl:col-span-2">
+              <div className="xl:col-span-4">
                 <motion.div
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
@@ -293,7 +293,7 @@ export default function DocumentEditor() {
               </div>
 
               {/* Preview Section */}
-              <div className="xl:col-span-3">
+              <div className="xl:col-span-6">
                 <motion.div
                   initial={{ opacity: 0, x: 20 }}
                   animate={{ opacity: 1, x: 0 }}
