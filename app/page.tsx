@@ -221,11 +221,11 @@ export default function DocumentEditor() {
     <div className="relative flex min-h-screen flex-col overflow-hidden">
       <GridPattern />
       <div className="relative flex flex-1 flex-col">
-        <div className="relative pt-8 sm:pt-12">
+        <div className="relative px-6 pt-8 sm:px-8 sm:pt-12 lg:px-4">
           <Header />
         </div>
 
-        <div className="mx-auto mt-16 max-w-[1400px] px-4 pb-24">
+        <div className="mx-auto mt-16 max-w-[1400px] px-6 pb-24 sm:px-8 lg:px-4">
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-5">
               {/* Editor Section */}
