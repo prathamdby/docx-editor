@@ -3,7 +3,7 @@ import { Github, Twitter, Linkedin } from "lucide-react";
 
 export const Footer = () => {
   return (
-    <div className="mt-16 border-t border-white/5 bg-white/[0.02] py-8 text-center sm:mt-24">
+    <div className="border-t border-white/5 bg-white/[0.02] py-6 text-center">
       <div className="flex flex-col items-center gap-4">
         <p className="text-sm font-medium text-white/60">
           Made with ♥️ by Pratham

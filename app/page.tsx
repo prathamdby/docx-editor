@@ -231,7 +231,7 @@ export default function DocumentEditor() {
           <Header />
         </div>
 
-        <div className="max-w-[1400px] mx-auto pb-20 px-4 mt-16 sm:mt-24">
+        <div className="max-w-[1400px] mx-auto pb-24 px-4 mt-16">
           <div className="max-w-6xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-6 xl:grid-cols-5">
               {/* Editor Section */}
