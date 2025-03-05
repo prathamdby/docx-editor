@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { motion } from "framer-motion";
 
 interface Question {
   number: string;
@@ -32,7 +33,11 @@ export function DocumentPreview({
   practicals,
 }: DocumentPreviewProps) {
   return (
-    <div className="relative mx-6 mb-6 mt-6 flex-grow overflow-y-auto rounded-lg bg-white shadow-2xl">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="relative mx-6 mb-6 mt-6 flex-grow overflow-y-auto rounded-lg bg-white shadow-2xl"
+    >
       <div className="relative p-8">
         <div className="mx-auto max-w-[8.5in] space-y-6 font-['Times_New_Roman'] text-black">
           <div className="text-right">
@@ -97,6 +102,6 @@ export function DocumentPreview({
           ))}
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

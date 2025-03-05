@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
-import { AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import GridPattern from "@/components/grid-pattern";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
@@ -229,71 +229,88 @@ export default function DocumentEditor() {
           <div className="mx-auto max-w-6xl">
             <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-5">
               {/* Editor Section */}
-              <Card className="border border-white/10 bg-white/5 p-6 backdrop-blur-xl xl:col-span-2">
-                <form onSubmit={handleSubmit} className="space-y-6">
-                  <StudentForm formData={formData} onChange={handleChange} />
-                  <div className="space-y-4">
-                    <AnimatePresence>
-                      {practicals.map((practical, pIndex) => (
-                        <PracticalForm
-                          key={pIndex}
-                          practical={practical}
-                          onPracticalChange={(field, value) =>
-                            handlePracticalChange(pIndex, field, value)
-                          }
-                          onQuestionChange={(questionIndex, field, value) =>
-                            handleQuestionChange(
-                              pIndex,
-                              questionIndex,
-                              field,
-                              value
-                            )
-                          }
-                          onAddQuestion={() => addQuestion(pIndex)}
-                          onRemoveQuestion={(questionIndex) =>
-                            removeQuestion(pIndex, questionIndex)
-                          }
-                          onFileChange={(e) => handleFileChange(pIndex, e)}
-                          onRemoveOutput={(outputIndex) =>
-                            removeOutput(pIndex, outputIndex)
-                          }
-                          onRemove={() => removePractical(pIndex)}
-                          canRemove={practicals.length > 1}
-                        />
-                      ))}
-                    </AnimatePresence>
-                    <Button
-                      type="button"
-                      onClick={addPractical}
-                      className="w-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-                      variant="secondary"
-                    >
-                      <Plus className="mr-2 h-4 w-4" />
-                      Add Practical
-                    </Button>
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full bg-white/10 text-white hover:bg-white/20"
-                    disabled={isGenerating}
-                  >
-                    {isGenerating
-                      ? "Generating Document..."
-                      : "Generate Document"}
-                  </Button>
-                </form>
-              </Card>
+              <div className="xl:col-span-2">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <Card className="h-full border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+                    <form onSubmit={handleSubmit} className="space-y-6">
+                      <StudentForm
+                        formData={formData}
+                        onChange={handleChange}
+                      />
+                      <div className="space-y-4">
+                        {practicals.map((practical, pIndex) => (
+                          <PracticalForm
+                            key={pIndex}
+                            practical={practical}
+                            onPracticalChange={(field, value) =>
+                              handlePracticalChange(pIndex, field, value)
+                            }
+                            onQuestionChange={(questionIndex, field, value) =>
+                              handleQuestionChange(
+                                pIndex,
+                                questionIndex,
+                                field,
+                                value
+                              )
+                            }
+                            onAddQuestion={() => addQuestion(pIndex)}
+                            onRemoveQuestion={(questionIndex) =>
+                              removeQuestion(pIndex, questionIndex)
+                            }
+                            onFileChange={(e) => handleFileChange(pIndex, e)}
+                            onRemoveOutput={(outputIndex) =>
+                              removeOutput(pIndex, outputIndex)
+                            }
+                            onRemove={() => removePractical(pIndex)}
+                            canRemove={practicals.length > 1}
+                          />
+                        ))}
+                        <Button
+                          type="button"
+                          onClick={addPractical}
+                          className="w-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+                          variant="secondary"
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          Add Practical
+                        </Button>
+                      </div>
+                      <Button
+                        type="submit"
+                        className="w-full bg-white/10 text-white hover:bg-white/20"
+                        disabled={isGenerating}
+                      >
+                        {isGenerating
+                          ? "Generating Document..."
+                          : "Generate Document"}
+                      </Button>
+                    </form>
+                  </Card>
+                </motion.div>
+              </div>
 
               {/* Preview Section */}
-              <Card className="flex flex-col border border-white/10 bg-white/5 backdrop-blur-xl lg:h-[800px] xl:col-span-3">
-                <div className="sticky top-0 z-10 border-b border-white/10 bg-black/20 p-4 backdrop-blur">
-                  <h2 className="text-sm font-medium text-white">Preview</h2>
-                </div>
-                <DocumentPreview
-                  studentData={formData}
-                  practicals={practicals}
-                />
-              </Card>
+              <div className="xl:col-span-3">
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                >
+                  <Card className="flex flex-col border border-white/10 bg-white/5 backdrop-blur-xl lg:h-[800px]">
+                    <div className="sticky top-0 z-10 border-b border-white/10 bg-black/20 p-4 backdrop-blur">
+                      <h2 className="text-sm font-medium text-white">
+                        Preview
+                      </h2>
+                    </div>
+                    <DocumentPreview
+                      studentData={formData}
+                      practicals={practicals}
+                    />
+                  </Card>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>
