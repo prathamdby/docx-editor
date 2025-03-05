@@ -217,7 +217,7 @@ export default function DocumentEditor() {
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#0A0B14] text-white">
+    <div className="relative flex min-h-screen flex-col overflow-hidden">
       <div className="relative flex flex-1 flex-col">
         <div className="relative pt-8 sm:pt-12">
           <Header />
