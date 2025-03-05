@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
-import { BokehBackground } from "@/components/bokeh-background";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { generateDocument } from "./actions";
@@ -219,13 +218,6 @@ export default function DocumentEditor() {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#0A0B14] text-white">
-      <BokehBackground />
-      {/* Background Grid Pattern */}
-      <div
-        className="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_1px,_transparent_1px)] bg-[length:24px_24px]"
-        style={{ opacity: 0.5 }}
-      />
-
       <div className="relative flex flex-1 flex-col">
         <div className="relative pt-8 sm:pt-12">
           <Header />
