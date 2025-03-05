@@ -23,9 +23,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body 
+      <body
         className={`${roboto.variable} min-h-screen bg-gradient-to-b from-black via-pink-950/80 to-black font-sans text-white antialiased`}
-        >
+      >
         {children}
         <Analytics />
       </body>

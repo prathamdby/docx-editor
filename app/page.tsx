@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Plus } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
+import GridPattern from "@/components/grid-pattern";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
 import { generateDocument } from "./actions";
@@ -218,6 +219,7 @@ export default function DocumentEditor() {
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden">
+      <GridPattern />
       <div className="relative flex flex-1 flex-col">
         <div className="relative pt-8 sm:pt-12">
           <Header />
