@@ -74,14 +74,14 @@ export default function DocumentEditor() {
       const blob = new Blob(
         [Uint8Array.from(atob(base64), (c) => c.charCodeAt(0))],
         {
-          type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+          type: "application/msword",
         }
       );
 
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `practicals.docx`);
+      link.setAttribute("download", `practicals.doc`);
       document.body.appendChild(link);
       link.click();
       link.remove();
