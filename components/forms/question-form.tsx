@@ -5,7 +5,7 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { X } from "lucide-react";
+import { X, Code, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Question {
@@ -29,23 +29,26 @@ export function QuestionForm({
 }: QuestionFormProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
-      className="space-y-2"
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0, scale: 0.98 }}
+      transition={{ duration: 0.2 }}
     >
-      <Card className="border-white/10 bg-white/5 p-3">
-        <div className="mb-2 flex items-start justify-between">
-          <div className="mr-2 w-full">
-            <Label htmlFor="question-number" className="text-white">
-              Question Number
+      <Card className="border-border bg-card/50 p-4 transition-colors hover:bg-card/80">
+        <div className="mb-4 flex items-start justify-between gap-4">
+          <div className="w-full max-w-[120px]">
+            <Label
+              htmlFor="question-number"
+              className="mb-1.5 block text-[10px] font-bold uppercase text-muted-foreground"
+            >
+              ID
             </Label>
             <Input
               id="question-number"
               value={question.number}
               onChange={(e) => onQuestionChange("number", e.target.value)}
               required
-              className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
+              className="h-8 text-center font-mono text-xs"
             />
           </div>
           {canRemove && (
@@ -53,38 +56,48 @@ export function QuestionForm({
               type="button"
               variant="ghost"
               size="icon"
-              className="mt-7 text-white backdrop-blur-sm hover:bg-white/5"
+              className="h-8 w-8 text-muted-foreground hover:text-destructive"
               onClick={onRemove}
             >
               <X className="h-4 w-4" />
             </Button>
           )}
         </div>
-        <div className="space-y-3">
-          <div>
-            <Label htmlFor="question-text" className="text-white">
-              Question
+
+        <div className="space-y-4">
+          <div className="space-y-2">
+            <Label
+              htmlFor="question-text"
+              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+            >
+              <HelpCircle className="h-3 w-3" />
+              Problem Statement
             </Label>
             <Textarea
               id="question-text"
               value={question.questionText}
               onChange={(e) => onQuestionChange("questionText", e.target.value)}
-              className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
+              className="min-h-[80px] resize-none font-mono text-xs"
               required
-              placeholder="Write your question here..."
+              placeholder="Enter problem statement..."
             />
           </div>
-          <div>
-            <Label htmlFor="question-code" className="text-white">
-              Code
+          <div className="space-y-2">
+            <Label
+              htmlFor="question-code"
+              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+            >
+              <Code className="h-3 w-3" />
+              Implementation
             </Label>
             <Textarea
               id="question-code"
               value={question.code}
               onChange={(e) => onQuestionChange("code", e.target.value)}
-              className="mt-1.5 min-h-[200px] border-white/10 bg-white/[0.07] font-mono text-white focus:bg-white/10"
+              className="min-h-[150px] bg-black/40 font-mono text-xs leading-relaxed text-text-lime"
               required
-              placeholder="Write your code here..."
+              placeholder="// void implementation() {...}"
+              spellCheck={false}
             />
           </div>
         </div>

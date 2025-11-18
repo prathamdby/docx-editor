@@ -3,8 +3,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ImageIcon, X } from "lucide-react";
+import { ImageIcon, X, UploadCloud } from "lucide-react";
 import Image from "next/image";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface OutputGalleryProps {
   outputs: File[];
@@ -18,33 +19,47 @@ export function OutputGallery({
   onRemoveOutput,
 }: OutputGalleryProps) {
   return (
-    <div>
-      <div className="mb-2 flex items-center justify-between">
-        <Label className="text-white">Output Screenshots (Max 3)</Label>
-        <span className="text-sm text-gray-400">{outputs.length}/3</span>
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <Label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+          <ImageIcon className="h-3 w-3" />
+          Artifacts
+        </Label>
+        <span className="font-mono text-[10px] text-muted-foreground">
+          [{outputs.length}/3]
+        </span>
       </div>
-      <div className="mb-2 grid grid-cols-3 gap-2">
-        {outputs.map((output, index) => (
-          <div key={index} className="group relative">
-            <div className="relative h-24 w-full">
+
+      <div className="grid grid-cols-3 gap-3">
+        <AnimatePresence mode="popLayout">
+          {outputs.map((output, index) => (
+            <motion.div
+              key={index}
+              layout
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.9 }}
+              className="group relative aspect-square overflow-hidden rounded-md border border-border bg-black/40"
+            >
               <Image
                 src={URL.createObjectURL(output)}
                 alt={`Output ${index + 1}`}
                 fill
-                className="rounded-lg border border-white/10 object-cover"
+                className="object-cover opacity-80 grayscale transition-opacity duration-300 hover:grayscale-0 group-hover:opacity-100"
               />
-            </div>
-            <button
-              type="button"
-              onClick={() => onRemoveOutput(index)}
-              className="absolute right-1 top-1 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity group-hover:opacity-100"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          </div>
-        ))}
+              <button
+                type="button"
+                onClick={() => onRemoveOutput(index)}
+                className="absolute right-1 top-1 rounded-sm border border-white/20 bg-black p-1 text-white opacity-0 transition-all hover:bg-destructive group-hover:opacity-100"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
         {outputs.length < 3 && (
-          <div>
+          <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Input
               id="output-upload"
               type="file"
@@ -56,15 +71,13 @@ export function OutputGallery({
             <Button
               type="button"
               variant="secondary"
-              className="h-24 w-full border-white/10 bg-white/5 text-white hover:bg-white/10"
+              className="h-full w-full flex-col gap-2 rounded-md border border-dashed border-border bg-transparent text-muted-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
               onClick={() => document.getElementById("output-upload")?.click()}
             >
-              <div className="flex flex-col items-center">
-                <ImageIcon className="mb-1 h-6 w-6" />
-                <span className="text-xs">Add Image</span>
-              </div>
+              <UploadCloud className="h-4 w-4" />
+              <span className="font-mono text-[10px] uppercase">Upload</span>
             </Button>
-          </div>
+          </motion.div>
         )}
       </div>
     </div>

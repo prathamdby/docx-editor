@@ -1,19 +1,22 @@
 import type { Metadata } from "next";
-import { Roboto } from "next/font/google";
+import { Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 
-const roboto = Roboto({
-  weight: ["100", "300", "400", "500", "700", "900"],
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  display: "swap",
-  variable: "--font-roboto",
+  variable: "--font-space-grotesk",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-jetbrains-mono",
 });
 
 export const metadata: Metadata = {
-  title: "DocX Editor - Generate Beautiful Practical Documents",
+  title: "DocX Editor - Midnight Lab",
   description:
-    "Create professionally formatted practical documents with our intelligent document generator. Features live preview, multiple practicals support, and beautiful formatting.",
+    "Professional practical document generator with a high-precision technical interface.",
 };
 
 export default function RootLayout({
@@ -22,9 +25,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body
-        className={`${roboto.variable} min-h-screen bg-gradient-to-b from-black via-pink-950/80 to-black font-sans text-white antialiased`}
+        className={`${spaceGrotesk.variable} ${jetbrainsMono.variable} min-h-screen bg-background font-sans text-foreground antialiased`}
       >
         {children}
         <Analytics />

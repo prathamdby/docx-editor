@@ -2,11 +2,18 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Plus } from "lucide-react";
-import { motion } from "framer-motion";
-import GridPattern from "@/components/grid-pattern";
-import { Footer } from "@/components/footer";
+import {
+  Plus,
+  Edit3,
+  Eye,
+  Terminal,
+  LayoutTemplate,
+  FileCode2,
+  Settings,
+  ChevronRight,
+  Trash2,
+} from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Header } from "@/components/header";
 import { generateDocument } from "./actions";
 import { StudentForm } from "@/components/forms/student-form";
@@ -16,11 +23,18 @@ import { Question, Practical, StudentData } from "./types";
 
 export default function DocumentEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
+  // Tabs: 'project' (Sidebar on mobile), 'editor' (Main), 'preview' (Right)
+  const [activeTab, setActiveTab] = useState<"project" | "editor" | "preview">(
+    "project"
+  );
+  const [activePracticalIndex, setActivePracticalIndex] = useState(0);
+
   const [formData, setFormData] = useState<StudentData>({
     name: "",
     rollNo: "",
     course: "",
   });
+
   const [practicals, setPracticals] = useState<Practical[]>([
     {
       practicalNo: "1",
@@ -31,8 +45,7 @@ export default function DocumentEditor() {
     },
   ]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
+  async function handleGenerate() {
     setIsGenerating(true);
 
     const formDataObj = new FormData();
@@ -211,111 +224,265 @@ export default function DocumentEditor() {
         conclusion: "",
       },
     ]);
+    setActivePracticalIndex(practicals.length);
+    // Auto-switch to editor on mobile when adding
+    if (window.innerWidth < 1024) {
+      setActiveTab("editor");
+    }
   };
 
   const removePractical = (index: number) => {
-    setPracticals((prev) => prev.filter((_, i) => i !== index));
+    const newPracticals = practicals.filter((_, i) => i !== index);
+    setPracticals(newPracticals);
+    if (activePracticalIndex >= newPracticals.length) {
+      setActivePracticalIndex(Math.max(0, newPracticals.length - 1));
+    }
   };
 
   return (
-    <div className="relative flex min-h-screen flex-col overflow-hidden">
-      <GridPattern />
-      <div className="relative flex flex-1 flex-col">
-        <div className="relative px-6 pt-8 sm:px-8 sm:pt-12 lg:px-4">
-          <Header />
-        </div>
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
+      <Header />
 
-        <div className="mx-auto mt-16 max-w-[1400px] px-6 pb-24 sm:px-8 lg:px-4">
-          <div className="mx-auto max-w-6xl">
-            <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-10">
-              {/* Editor Section */}
-              <div className="xl:col-span-4">
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  <Card className="h-full border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                    <form onSubmit={handleSubmit} className="space-y-6">
-                      <StudentForm
-                        formData={formData}
-                        onChange={handleChange}
-                      />
-                      <div className="space-y-4">
-                        {practicals.map((practical, pIndex) => (
-                          <PracticalForm
-                            key={pIndex}
-                            practical={practical}
-                            onPracticalChange={(field, value) =>
-                              handlePracticalChange(pIndex, field, value)
-                            }
-                            onQuestionChange={(questionIndex, field, value) =>
-                              handleQuestionChange(
-                                pIndex,
-                                questionIndex,
-                                field,
-                                value
-                              )
-                            }
-                            onAddQuestion={() => addQuestion(pIndex)}
-                            onRemoveQuestion={(questionIndex) =>
-                              removeQuestion(pIndex, questionIndex)
-                            }
-                            onFileChange={(e) => handleFileChange(pIndex, e)}
-                            onRemoveOutput={(outputIndex) =>
-                              removeOutput(pIndex, outputIndex)
-                            }
-                            onRemove={() => removePractical(pIndex)}
-                            canRemove={practicals.length > 1}
-                          />
-                        ))}
-                        <Button
-                          type="button"
-                          onClick={addPractical}
-                          className="w-full border-white/10 bg-white/5 text-white hover:bg-white/10"
-                          variant="secondary"
-                        >
-                          <Plus className="mr-2 h-4 w-4" />
-                          Add Practical
-                        </Button>
-                      </div>
-                      <Button
-                        type="submit"
-                        className="w-full bg-white/10 text-white hover:bg-white/20"
-                        disabled={isGenerating}
+      {/* Main Workspace */}
+      <main className="flex flex-1 overflow-hidden pt-14">
+        {/* LEFT SIDEBAR: Project Explorer */}
+        <aside
+          className={` ${activeTab === "project" ? "flex" : "hidden"} w-full flex-col border-r border-border bg-card/30 backdrop-blur-sm lg:flex lg:w-80`}
+        >
+          <div className="flex-1 space-y-8 overflow-y-auto p-4">
+            {/* Student Config Section */}
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 border-b border-border pb-2 text-muted-foreground">
+                <Settings className="h-4 w-4" />
+                <h3 className="text-xs font-bold uppercase tracking-wider">
+                  Config
+                </h3>
+              </div>
+              <StudentForm formData={formData} onChange={handleChange} />
+            </div>
+
+            {/* Practicals Navigation */}
+            <div className="space-y-4">
+              <div className="flex items-center justify-between border-b border-border pb-2 text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <LayoutTemplate className="h-4 w-4" />
+                  <h3 className="text-xs font-bold uppercase tracking-wider">
+                    Modules
+                  </h3>
+                </div>
+                <span className="rounded bg-secondary px-1.5 font-mono text-[10px]">
+                  {practicals.length}
+                </span>
+              </div>
+
+              <div className="space-y-1">
+                {practicals.map((p, i) => (
+                  <div
+                    key={i}
+                    className={`group relative flex w-full items-center gap-3 rounded-md p-2 text-left transition-all ${
+                      activePracticalIndex === i
+                        ? "border border-primary/20 bg-primary/10 text-primary"
+                        : "border border-transparent text-muted-foreground hover:bg-secondary/50 hover:text-foreground"
+                    }`}
+                  >
+                    <button
+                      onClick={() => {
+                        setActivePracticalIndex(i);
+                        if (window.innerWidth < 1024) setActiveTab("editor");
+                      }}
+                      className="flex min-w-0 flex-1 items-center gap-3 text-left"
+                    >
+                      <div
+                        className={`flex h-6 w-6 flex-shrink-0 items-center justify-center rounded text-xs font-bold ${
+                          activePracticalIndex === i
+                            ? "bg-primary text-black"
+                            : "bg-secondary text-muted-foreground group-hover:bg-secondary/80"
+                        }`}
                       >
-                        {isGenerating
-                          ? "Generating Document..."
-                          : "Generate Document"}
-                      </Button>
-                    </form>
-                  </Card>
-                </motion.div>
+                        {p.practicalNo}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="truncate text-xs font-bold">
+                          {p.aim || "Untitled Module"}
+                        </div>
+                        <div className="truncate font-mono text-[10px] opacity-60">
+                          Questions: {p.questions.length}
+                        </div>
+                      </div>
+                      {activePracticalIndex === i && (
+                        <ChevronRight className="h-3 w-3 flex-shrink-0" />
+                      )}
+                    </button>
+
+                    {/* Delete Button */}
+                    {practicals.length > 1 && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removePractical(i);
+                        }}
+                        className={`rounded p-1 opacity-0 transition-all hover:bg-destructive hover:text-destructive-foreground group-hover:opacity-100 ${
+                          activePracticalIndex === i
+                            ? "text-primary opacity-50"
+                            : "text-muted-foreground"
+                        }`}
+                        title="Delete Module"
+                      >
+                        <Trash2 className="h-3 w-3" />
+                      </button>
+                    )}
+                  </div>
+                ))}
               </div>
 
-              {/* Preview Section */}
-              <div className="xl:col-span-6">
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                >
-                  <Card className="flex flex-col border border-white/10 bg-white/5 backdrop-blur-xl lg:h-[800px]">
-                    <div className="sticky top-0 z-10 border-b border-white/10 bg-black/20 p-4 backdrop-blur">
-                      <h2 className="text-sm font-medium text-white">
-                        Preview
-                      </h2>
-                    </div>
-                    <DocumentPreview
-                      studentData={formData}
-                      practicals={practicals}
-                    />
-                  </Card>
-                </motion.div>
-              </div>
+              <Button
+                onClick={addPractical}
+                variant="outline"
+                className="h-9 w-full border-dashed border-border text-xs uppercase tracking-wider hover:border-primary hover:text-primary"
+              >
+                <Plus className="mr-2 h-3 w-3" />
+                New Module
+              </Button>
             </div>
           </div>
+
+          {/* Bottom Action */}
+          <div className="border-t border-border bg-card/50 p-4">
+            <Button
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="w-full font-bold uppercase tracking-wider"
+            >
+              {isGenerating ? "Compiling..." : "Compile Artifact"}
+            </Button>
+          </div>
+        </aside>
+
+        {/* CENTER PANE: Editor */}
+        <section
+          className={` ${activeTab === "editor" ? "flex" : "hidden"} relative z-10 min-w-0 flex-1 flex-col bg-background lg:flex`}
+        >
+          {/* Editor Toolbar */}
+          <div className="flex h-12 items-center justify-between border-b border-border bg-background/95 px-6 backdrop-blur">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <FileCode2 className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Editor / Module_
+                {practicals[activePracticalIndex]?.practicalNo || "?"}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="flex h-2 w-2 animate-pulse rounded-full bg-green-500"></span>
+              <span className="font-mono text-[10px] uppercase text-muted-foreground">
+                Live
+              </span>
+            </div>
+          </div>
+
+          {/* Editor Scroll Area */}
+          <div className="flex-1 overflow-y-auto p-4 sm:p-8 lg:p-12">
+            <div className="mx-auto max-w-3xl pb-24">
+              {practicals[activePracticalIndex] && (
+                <motion.div
+                  key={activePracticalIndex}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <PracticalForm
+                    practical={practicals[activePracticalIndex]}
+                    onPracticalChange={(field, value) =>
+                      handlePracticalChange(activePracticalIndex, field, value)
+                    }
+                    onQuestionChange={(qIndex, field, value) =>
+                      handleQuestionChange(
+                        activePracticalIndex,
+                        qIndex,
+                        field,
+                        value
+                      )
+                    }
+                    onAddQuestion={() => addQuestion(activePracticalIndex)}
+                    onRemoveQuestion={(qIndex) =>
+                      removeQuestion(activePracticalIndex, qIndex)
+                    }
+                    onFileChange={(e) =>
+                      handleFileChange(activePracticalIndex, e)
+                    }
+                    onRemoveOutput={(oIndex) =>
+                      removeOutput(activePracticalIndex, oIndex)
+                    }
+                    onRemove={() => removePractical(activePracticalIndex)}
+                    canRemove={practicals.length > 1}
+                  />
+                </motion.div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* RIGHT PANE: Preview */}
+        <aside
+          className={` ${activeTab === "preview" ? "flex" : "hidden"} w-full flex-col border-l border-border bg-secondary/10 lg:flex lg:w-[45%] xl:w-[40%]`}
+        >
+          <div className="flex h-12 items-center justify-between border-b border-border bg-secondary/20 px-4">
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Terminal className="h-4 w-4" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Preview_Render
+              </span>
+            </div>
+          </div>
+          <div className="relative flex-1 overflow-hidden">
+            <DocumentPreview studentData={formData} practicals={practicals} />
+          </div>
+        </aside>
+      </main>
+
+      {/* MOBILE NAVIGATION */}
+      <nav className="fixed bottom-6 left-6 right-6 z-50 lg:hidden">
+        <div className="mx-auto flex max-w-sm items-center justify-between rounded-full border border-border bg-card p-1.5 shadow-2xl">
+          <button
+            onClick={() => setActiveTab("project")}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 transition-all ${
+              activeTab === "project"
+                ? "bg-primary font-bold text-black"
+                : "text-muted-foreground hover:text-white"
+            }`}
+          >
+            <Settings className="h-4 w-4" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">
+              Config
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("editor")}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 transition-all ${
+              activeTab === "editor"
+                ? "bg-primary font-bold text-black"
+                : "text-muted-foreground hover:text-white"
+            }`}
+          >
+            <Edit3 className="h-4 w-4" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">
+              Edit
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("preview")}
+            className={`flex flex-1 items-center justify-center gap-2 rounded-full py-2.5 transition-all ${
+              activeTab === "preview"
+                ? "bg-primary font-bold text-black"
+                : "text-muted-foreground hover:text-white"
+            }`}
+          >
+            <Eye className="h-4 w-4" />
+            <span className="text-[10px] font-bold uppercase tracking-wider">
+              View
+            </span>
+          </button>
         </div>
-      </div>
-      <Footer />
+      </nav>
     </div>
   );
 }

@@ -5,11 +5,10 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Minus } from "lucide-react";
-import { motion } from "framer-motion";
+import { Plus, Trash2, Book, Target, FileText } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { QuestionForm } from "./question-form";
 import { OutputGallery } from "./output-gallery";
-import { AnimatePresence } from "framer-motion";
 
 interface Question {
   number: string;
@@ -57,104 +56,133 @@ export function PracticalForm({
 }: PracticalFormProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, height: 0 }}
-      animate={{ opacity: 1, height: "auto" }}
-      exit={{ opacity: 0, height: 0 }}
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, scale: 0.98 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="space-y-4 border-white/10 bg-white/5 p-4">
-        <div className="flex items-center justify-between">
-          <h3 className="text-xl font-bold text-white">
-            Practical {practical.practicalNo}
-          </h3>
+      <Card className="relative overflow-hidden p-0">
+        {/* Header Stripe */}
+        <div className="flex items-center justify-between border-b border-border bg-secondary/30 px-6 py-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-primary text-xs font-bold text-black">
+              {practical.practicalNo}
+            </div>
+            <h3 className="font-mono text-sm font-bold uppercase tracking-wider text-foreground">
+              Experiment_Module
+            </h3>
+          </div>
           {canRemove && (
             <Button
               type="button"
               variant="ghost"
-              size="icon"
+              size="sm"
               onClick={onRemove}
-              className="text-red-400 hover:bg-red-500/10 hover:text-red-300"
+              className="h-8 w-8 p-0 text-muted-foreground hover:text-destructive"
             >
-              <Minus className="h-4 w-4" />
+              <Trash2 className="h-4 w-4" />
             </Button>
           )}
         </div>
 
-        <div>
-          <Label htmlFor="practicalNo" className="text-white">
-            Practical Number
-          </Label>
-          <Input
-            id="practicalNo"
-            value={practical.practicalNo}
-            onChange={(e) => onPracticalChange("practicalNo", e.target.value)}
-            required
-            className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
-          />
-        </div>
-
-        <div>
-          <Label htmlFor="aim" className="text-white">
-            Aim
-          </Label>
-          <Input
-            id="aim"
-            value={practical.aim}
-            onChange={(e) => onPracticalChange("aim", e.target.value)}
-            required
-            className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
-          />
-        </div>
-
-        {/* Questions Section */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <Label className="text-white">Questions & Code</Label>
-            <Button
-              type="button"
-              variant="secondary"
-              size="sm"
-              onClick={onAddQuestion}
-              className="border-white/10 bg-white/5 text-white hover:bg-white/10"
-            >
-              <Plus className="mr-1 h-3 w-3" />
-              Add Question
-            </Button>
-          </div>
-          <AnimatePresence>
-            {practical.questions.map((question, index) => (
-              <QuestionForm
-                key={index}
-                question={question}
-                onQuestionChange={(field, value) =>
-                  onQuestionChange(index, field, value)
+        <div className="space-y-6 p-6">
+          <div className="grid gap-6 sm:grid-cols-4">
+            <div className="sm:col-span-1">
+              <Label
+                htmlFor="practicalNo"
+                className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+              >
+                <Book className="h-3 w-3" />
+                ID
+              </Label>
+              <Input
+                id="practicalNo"
+                value={practical.practicalNo}
+                onChange={(e) =>
+                  onPracticalChange("practicalNo", e.target.value)
                 }
-                onRemove={() => onRemoveQuestion(index)}
-                canRemove={practical.questions.length > 1}
+                required
+                className="font-mono font-bold"
               />
-            ))}
-          </AnimatePresence>
-        </div>
+            </div>
+            <div className="sm:col-span-3">
+              <Label
+                htmlFor="aim"
+                className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+              >
+                <Target className="h-3 w-3" />
+                Objective
+              </Label>
+              <Input
+                id="aim"
+                value={practical.aim}
+                onChange={(e) => onPracticalChange("aim", e.target.value)}
+                required
+                placeholder="Define experimental objective..."
+                className="font-mono"
+              />
+            </div>
+          </div>
 
-        {/* Outputs Section */}
-        <OutputGallery
-          outputs={practical.outputs}
-          onFileChange={onFileChange}
-          onRemoveOutput={onRemoveOutput}
-        />
+          {/* Questions Section */}
+          <div className="space-y-4 rounded-md border border-dashed border-border bg-secondary/20 p-4">
+            <div className="flex items-center justify-between">
+              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
+                Query_Stack
+              </Label>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={onAddQuestion}
+                className="h-7 text-[10px] uppercase tracking-wider"
+              >
+                <Plus className="mr-1.5 h-3 w-3" />
+                Append Query
+              </Button>
+            </div>
+            <div className="space-y-4">
+              <AnimatePresence mode="popLayout">
+                {practical.questions.map((question, index) => (
+                  <QuestionForm
+                    key={index}
+                    question={question}
+                    onQuestionChange={(field, value) =>
+                      onQuestionChange(index, field, value)
+                    }
+                    onRemove={() => onRemoveQuestion(index)}
+                    canRemove={practical.questions.length > 1}
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
 
-        {/* Conclusion Section */}
-        <div>
-          <Label htmlFor="conclusion" className="text-white">
-            Conclusion
-          </Label>
-          <Textarea
-            id="conclusion"
-            value={practical.conclusion}
-            onChange={(e) => onPracticalChange("conclusion", e.target.value)}
-            className="mt-1.5 min-h-[100px] border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
-            required
+          {/* Outputs Section */}
+          <OutputGallery
+            outputs={practical.outputs}
+            onFileChange={onFileChange}
+            onRemoveOutput={onRemoveOutput}
           />
+
+          {/* Conclusion Section */}
+          <div>
+            <Label
+              htmlFor="conclusion"
+              className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+            >
+              <FileText className="h-3 w-3" />
+              Analysis
+            </Label>
+            <Textarea
+              id="conclusion"
+              value={practical.conclusion}
+              onChange={(e) => onPracticalChange("conclusion", e.target.value)}
+              className="min-h-[80px] font-mono text-xs"
+              required
+              placeholder="Synthesize findings..."
+            />
+          </div>
         </div>
       </Card>
     </motion.div>

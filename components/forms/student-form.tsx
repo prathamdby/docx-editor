@@ -2,6 +2,7 @@
 
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { User, Hash, BookOpen } from "lucide-react";
 
 interface StudentFormData {
   name: string;
@@ -16,11 +17,15 @@ interface StudentFormProps {
 
 export function StudentForm({ formData, onChange }: StudentFormProps) {
   return (
-    <div className="space-y-4">
-      <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <Label htmlFor="name" className="text-white">
-            Name
+    <div className="space-y-6">
+      <div className="grid gap-6 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label
+            htmlFor="name"
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+          >
+            <User className="h-3 w-3" />
+            Full Name
           </Label>
           <Input
             id="name"
@@ -28,11 +33,16 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
             value={formData.name}
             onChange={onChange}
             required
-            className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
+            placeholder="JOHN DOE"
+            className="font-mono"
           />
         </div>
-        <div>
-          <Label htmlFor="rollNo" className="text-white">
+        <div className="space-y-2">
+          <Label
+            htmlFor="rollNo"
+            className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+          >
+            <Hash className="h-3 w-3" />
             Roll Number
           </Label>
           <Input
@@ -41,13 +51,18 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
             value={formData.rollNo}
             onChange={onChange}
             required
-            className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
+            placeholder="000000"
+            className="font-mono"
           />
         </div>
       </div>
-      <div>
-        <Label htmlFor="course" className="text-white">
-          Course
+      <div className="space-y-2">
+        <Label
+          htmlFor="course"
+          className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
+        >
+          <BookOpen className="h-3 w-3" />
+          Course ID
         </Label>
         <Input
           id="course"
@@ -55,7 +70,8 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
           value={formData.course}
           onChange={onChange}
           required
-          className="mt-1.5 border-white/10 bg-white/[0.07] text-white focus:bg-white/10"
+          placeholder="CS-2024-A"
+          className="font-mono"
         />
       </div>
     </div>

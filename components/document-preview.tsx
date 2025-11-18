@@ -33,30 +33,45 @@ export function DocumentPreview({
   practicals,
 }: DocumentPreviewProps) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="relative mx-6 mb-6 mt-6 flex-grow overflow-y-auto rounded-lg bg-white shadow-2xl"
-    >
-      <div className="relative p-8">
-        <div className="mx-auto max-w-[8.5in] space-y-6 font-['Times_New_Roman'] text-black">
-          <div className="text-right">
-            <p>{studentData.name}</p>
-            <p>Roll no. {studentData.rollNo}</p>
-            <p>{studentData.course}</p>
+    <div className="relative h-full w-full overflow-hidden bg-background p-4 sm:p-8">
+      {/* Grid Background */}
+      <div className="bg-grid-pattern pointer-events-none absolute inset-0 opacity-20" />
+
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative mx-auto min-h-[29.7cm] max-w-[21cm] origin-top bg-white transition-all duration-500 lg:shadow-[4px_4px_0_0_#262626,8px_8px_0_0_#171717]"
+      >
+        <div
+          className="p-[2.54cm] text-black"
+          style={{ fontFamily: '"Times New Roman", Times, serif' }}
+        >
+          <div className="space-y-1 text-right leading-tight">
+            <p className="text-lg">{studentData.name || "Name"}</p>
+            <p className="text-lg">
+              {studentData.rollNo
+                ? `Roll no. ${studentData.rollNo}`
+                : "Roll Number"}
+            </p>
+            <p className="text-lg">{studentData.course || "Course"}</p>
           </div>
 
           {practicals.map((practical, pIndex) => (
-            <div key={pIndex} className="mt-8 space-y-6">
+            <div key={pIndex} className="mt-12 space-y-8">
               <div className="text-center">
-                <h1 className="text-xl font-bold underline">
+                <h1
+                  className="text-xl font-bold uppercase underline underline-offset-4"
+                  style={{ fontFamily: '"Times New Roman", Times, serif' }}
+                >
                   PRACTICAL No. {practical.practicalNo}
                 </h1>
               </div>
 
-              <div>
-                <p>
-                  <span className="font-bold underline">AIM:</span>{" "}
+              <div className="space-y-2">
+                <p className="text-lg">
+                  <span className="font-bold underline underline-offset-2">
+                    AIM:
+                  </span>{" "}
                   {practical.aim}
                 </p>
               </div>
@@ -64,30 +79,37 @@ export function DocumentPreview({
               {practical.questions.map((question, qIndex) => (
                 <div key={qIndex} className="space-y-4">
                   <div>
-                    <p className="font-bold underline">
+                    <p className="text-lg font-bold underline underline-offset-2">
                       Question {question.number}:
                     </p>
-                    <p className="mt-2">{question.questionText}</p>
+                    <p className="mt-2 text-lg">{question.questionText}</p>
                   </div>
                   <div>
-                    <p className="font-bold">Code:</p>
-                    <pre className="mt-2 whitespace-pre-wrap rounded-lg bg-gray-50 p-4 font-mono text-sm">
-                      {question.code}
-                    </pre>
+                    <p className="text-lg font-bold">Code:</p>
+                    <div className="mt-2 rounded border border-gray-300 bg-gray-50 p-4">
+                      <pre className="whitespace-pre-wrap font-mono text-sm leading-relaxed text-gray-800">
+                        {question.code}
+                      </pre>
+                    </div>
                   </div>
                 </div>
               ))}
 
               <div>
-                <p className="font-bold underline">OUTPUT:</p>
-                <div className="mt-2 grid grid-cols-3 gap-4">
+                <p className="text-lg font-bold underline underline-offset-2">
+                  OUTPUT:
+                </p>
+                <div className="mt-4 grid grid-cols-2 gap-6">
                   {practical.outputs.map((output, oIndex) => (
-                    <div key={oIndex} className="relative h-48">
+                    <div
+                      key={oIndex}
+                      className="relative aspect-[4/3] overflow-hidden rounded border border-gray-300"
+                    >
                       <Image
                         src={URL.createObjectURL(output)}
                         alt={`Output ${oIndex + 1}`}
                         fill
-                        className="rounded-lg border object-contain"
+                        className="object-contain"
                       />
                     </div>
                   ))}
@@ -95,13 +117,29 @@ export function DocumentPreview({
               </div>
 
               <div>
-                <p className="font-bold underline">CONCLUSION:</p>
-                <p className="mt-2">{practical.conclusion}</p>
+                <p className="text-lg font-bold underline underline-offset-2">
+                  CONCLUSION:
+                </p>
+                <p className="mt-2 text-lg leading-relaxed">
+                  {practical.conclusion}
+                </p>
               </div>
+
+              {/* Page Break Indicator for Preview */}
+              {pIndex < practicals.length - 1 && (
+                <div className="my-8 border-b border-dashed border-gray-300 py-4 text-center">
+                  <span
+                    className="bg-white px-2 font-mono text-xs uppercase text-gray-400"
+                    style={{ fontFamily: "monospace" }}
+                  >
+                    Page Break
+                  </span>
+                </div>
+              )}
             </div>
           ))}
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </div>
   );
 }
