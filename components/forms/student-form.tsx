@@ -3,19 +3,18 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { User, Hash, BookOpen } from "lucide-react";
-
-interface StudentFormData {
-  name: string;
-  rollNo: string;
-  course: string;
-}
+import { memo } from "react";
+import type { StudentData } from "@/app/types";
 
 interface StudentFormProps {
-  formData: StudentFormData;
+  formData: StudentData;
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export function StudentForm({ formData, onChange }: StudentFormProps) {
+export const StudentForm = memo(function StudentForm({
+  formData,
+  onChange,
+}: StudentFormProps) {
   return (
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2">
@@ -76,4 +75,4 @@ export function StudentForm({ formData, onChange }: StudentFormProps) {
       </div>
     </div>
   );
-}
+});

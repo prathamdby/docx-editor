@@ -7,21 +7,17 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Code, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
-
-interface Question {
-  number: string;
-  questionText: string;
-  code: string;
-}
+import { memo } from "react";
+import type { Question } from "@/app/types";
 
 interface QuestionFormProps {
   question: Question;
-  onQuestionChange: (field: keyof Question, value: string) => void;
+  onQuestionChange: (field: keyof Omit<Question, "id">, value: string) => void;
   onRemove: () => void;
   canRemove: boolean;
 }
 
-export function QuestionForm({
+export const QuestionForm = memo(function QuestionForm({
   question,
   onQuestionChange,
   onRemove,
@@ -104,4 +100,4 @@ export function QuestionForm({
       </Card>
     </motion.div>
   );
-}
+});

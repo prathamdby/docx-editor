@@ -6,6 +6,8 @@ import { Label } from "@/components/ui/label";
 import { ImageIcon, X, UploadCloud } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
+import { memo, useRef } from "react";
+import { useObjectUrls } from "@/hooks/use-object-urls";
 
 interface OutputGalleryProps {
   outputs: File[];
@@ -13,11 +15,14 @@ interface OutputGalleryProps {
   onRemoveOutput: (index: number) => void;
 }
 
-export function OutputGallery({
+export const OutputGallery = memo(function OutputGallery({
   outputs,
   onFileChange,
   onRemoveOutput,
 }: OutputGalleryProps) {
+  const outputUrls = useObjectUrls(outputs);
+  const inputRef = useRef<HTMLInputElement>(null);
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
@@ -32,9 +37,9 @@ export function OutputGallery({
 
       <div className="grid grid-cols-3 gap-3">
         <AnimatePresence mode="popLayout">
-          {outputs.map((output, index) => (
+          {outputUrls.map((url, index) => (
             <motion.div
-              key={index}
+              key={`output-${index}`}
               layout
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -42,7 +47,7 @@ export function OutputGallery({
               className="group relative aspect-square overflow-hidden rounded-md border border-border bg-black/40"
             >
               <Image
-                src={URL.createObjectURL(output)}
+                src={url}
                 alt={`Output ${index + 1}`}
                 fill
                 className="object-cover opacity-80 grayscale transition-opacity duration-300 hover:grayscale-0 group-hover:opacity-100"
@@ -61,7 +66,7 @@ export function OutputGallery({
         {outputs.length < 3 && (
           <motion.div layout initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <Input
-              id="output-upload"
+              ref={inputRef}
               type="file"
               accept="image/*"
               onChange={onFileChange}
@@ -72,7 +77,7 @@ export function OutputGallery({
               type="button"
               variant="secondary"
               className="h-full w-full flex-col gap-2 rounded-md border border-dashed border-border bg-transparent text-muted-foreground hover:border-primary hover:bg-primary/5 hover:text-primary"
-              onClick={() => document.getElementById("output-upload")?.click()}
+              onClick={() => inputRef.current?.click()}
             >
               <UploadCloud className="h-4 w-4" />
               <span className="font-mono text-[10px] uppercase">Upload</span>
@@ -82,4 +87,4 @@ export function OutputGallery({
       </div>
     </div>
   );
-}
+});

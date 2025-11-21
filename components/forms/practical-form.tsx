@@ -7,22 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Book, Target, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { memo } from "react";
 import { QuestionForm } from "./question-form";
 import { OutputGallery } from "./output-gallery";
-
-interface Question {
-  number: string;
-  questionText: string;
-  code: string;
-}
-
-interface Practical {
-  practicalNo: string;
-  aim: string;
-  questions: Question[];
-  outputs: File[];
-  conclusion: string;
-}
+import type { Practical, Question } from "@/app/types";
 
 interface PracticalFormProps {
   practical: Practical;
@@ -32,7 +20,7 @@ interface PracticalFormProps {
   ) => void;
   onQuestionChange: (
     questionIndex: number,
-    field: keyof Question,
+    field: keyof Omit<Question, "id">,
     value: string
   ) => void;
   onAddQuestion: () => void;
@@ -43,7 +31,7 @@ interface PracticalFormProps {
   canRemove: boolean;
 }
 
-export function PracticalForm({
+export const PracticalForm = memo(function PracticalForm({
   practical,
   onPracticalChange,
   onQuestionChange,
@@ -145,7 +133,7 @@ export function PracticalForm({
               <AnimatePresence mode="popLayout">
                 {practical.questions.map((question, index) => (
                   <QuestionForm
-                    key={index}
+                    key={question.id}
                     question={question}
                     onQuestionChange={(field, value) =>
                       onQuestionChange(index, field, value)
@@ -187,4 +175,4 @@ export function PracticalForm({
       </Card>
     </motion.div>
   );
-}
+});

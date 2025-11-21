@@ -1,11 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Plus,
-  Edit3,
-  Eye,
   Terminal,
   LayoutTemplate,
   FileCode2,
@@ -14,20 +12,46 @@ import {
   Trash2,
   MonitorOff,
 } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Header } from "@/components/header";
 import { generateDocument } from "./actions";
 import { StudentForm } from "@/components/forms/student-form";
 import { PracticalForm } from "@/components/forms/practical-form";
 import { DocumentPreview } from "@/components/document-preview";
 import { Question, Practical, StudentData } from "./types";
+import { useDebounced } from "@/hooks/use-debounced";
+
+function generateId(): string {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
+    return crypto.randomUUID();
+  }
+  return Math.random().toString(36).slice(2);
+}
+
+function createQuestion(number: string): Question {
+  return {
+    id: generateId(),
+    number,
+    questionText: "",
+    code: "",
+  };
+}
+
+function createPractical(practicalNo: string): Practical {
+  return {
+    practicalNo,
+    aim: "",
+    questions: [createQuestion("1")],
+    outputs: [],
+    conclusion: "",
+  };
+}
 
 export default function DocumentEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
-  // Tabs: 'project' (Sidebar on mobile), 'editor' (Main), 'preview' (Right)
-  const [activeTab, setActiveTab] = useState<"project" | "editor" | "preview">(
-    "project"
-  );
   const [activePracticalIndex, setActivePracticalIndex] = useState(0);
 
   const [formData, setFormData] = useState<StudentData>({
@@ -37,14 +61,11 @@ export default function DocumentEditor() {
   });
 
   const [practicals, setPracticals] = useState<Practical[]>([
-    {
-      practicalNo: "1",
-      aim: "",
-      questions: [{ number: "1", questionText: "", code: "" }],
-      outputs: [],
-      conclusion: "",
-    },
+    createPractical("1"),
   ]);
+
+  const debouncedFormData = useDebounced(formData, 150);
+  const debouncedPracticals = useDebounced(practicals, 150);
 
   async function handleGenerate() {
     setIsGenerating(true);
@@ -107,134 +128,116 @@ export default function DocumentEditor() {
     }
   }
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData((prev) => ({
-      ...prev,
-      [e.target.name]: e.target.value,
-    }));
-  };
+  const handleChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      setFormData((prev) => ({
+        ...prev,
+        [e.target.name]: e.target.value,
+      }));
+    },
+    []
+  );
 
-  const handlePracticalChange = (
-    index: number,
-    field: keyof Practical,
-    value: string | Question[] | File[]
-  ) => {
-    setPracticals((prev) =>
-      prev.map((p, i) => (i === index ? { ...p, [field]: value } : p))
-    );
-  };
+  const updatePractical = useCallback(
+    (index: number, updater: (p: Practical) => Practical) => {
+      setPracticals((prev) =>
+        prev.map((p, i) => (i === index ? updater(p) : p))
+      );
+    },
+    []
+  );
 
-  const handleQuestionChange = (
-    practicalIndex: number,
-    questionIndex: number,
-    field: keyof Question,
-    value: string
-  ) => {
-    setPracticals((prev) =>
-      prev.map((p, i) => {
-        if (i === practicalIndex) {
-          const newQuestions = [...p.questions];
-          newQuestions[questionIndex] = {
-            ...newQuestions[questionIndex],
-            [field]: value,
-          };
-          return { ...p, questions: newQuestions };
-        }
-        return p;
-      })
-    );
-  };
+  const handlePracticalChange = useCallback(
+    (
+      index: number,
+      field: keyof Practical,
+      value: string | Question[] | File[]
+    ) => {
+      updatePractical(index, (p) => ({ ...p, [field]: value }));
+    },
+    [updatePractical]
+  );
 
-  const addQuestion = (practicalIndex: number) => {
-    setPracticals((prev) =>
-      prev.map((p, i) => {
-        if (i === practicalIndex) {
-          return {
-            ...p,
-            questions: [
-              ...p.questions,
-              {
-                number: String(p.questions.length + 1),
-                questionText: "",
-                code: "",
-              },
-            ],
-          };
-        }
-        return p;
-      })
-    );
-  };
+  const handleQuestionChange = useCallback(
+    (
+      practicalIndex: number,
+      questionIndex: number,
+      field: keyof Omit<Question, "id">,
+      value: string
+    ) => {
+      updatePractical(practicalIndex, (p) => ({
+        ...p,
+        questions: p.questions.map((q, i) =>
+          i === questionIndex ? { ...q, [field]: value } : q
+        ),
+      }));
+    },
+    [updatePractical]
+  );
 
-  const removeQuestion = (practicalIndex: number, questionIndex: number) => {
-    setPracticals((prev) =>
-      prev.map((p, i) => {
-        if (i === practicalIndex) {
-          return {
-            ...p,
-            questions: p.questions.filter(
-              (_, qIndex) => qIndex !== questionIndex
-            ),
-          };
-        }
-        return p;
-      })
-    );
-  };
+  const addQuestion = useCallback(
+    (practicalIndex: number) => {
+      updatePractical(practicalIndex, (p) => ({
+        ...p,
+        questions: [
+          ...p.questions,
+          createQuestion(String(p.questions.length + 1)),
+        ],
+      }));
+    },
+    [updatePractical]
+  );
 
-  const handleFileChange = (
-    practicalIndex: number,
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const files = Array.from(e.target.files || []);
-    setPracticals((prev) =>
-      prev.map((p, i) => {
-        if (i === practicalIndex) {
-          const newOutputs = [...p.outputs, ...files].slice(0, 3);
-          return { ...p, outputs: newOutputs };
-        }
-        return p;
-      })
-    );
-  };
+  const removeQuestion = useCallback(
+    (practicalIndex: number, questionIndex: number) => {
+      updatePractical(practicalIndex, (p) => ({
+        ...p,
+        questions: p.questions.filter((_, qIndex) => qIndex !== questionIndex),
+      }));
+    },
+    [updatePractical]
+  );
 
-  const removeOutput = (practicalIndex: number, outputIndex: number) => {
-    setPracticals((prev) =>
-      prev.map((p, i) => {
-        if (i === practicalIndex) {
-          return {
-            ...p,
-            outputs: p.outputs.filter((_, oIndex) => oIndex !== outputIndex),
-          };
-        }
-        return p;
-      })
-    );
-  };
+  const handleFileChange = useCallback(
+    (practicalIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
+      const files = Array.from(e.target.files || []);
+      updatePractical(practicalIndex, (p) => ({
+        ...p,
+        outputs: [...p.outputs, ...files].slice(0, 3),
+      }));
+    },
+    [updatePractical]
+  );
 
-  const addPractical = () => {
-    setPracticals((prev) => [
-      ...prev,
-      {
-        practicalNo: String(prev.length + 1),
-        aim: "",
-        questions: [{ number: "1", questionText: "", code: "" }],
-        outputs: [],
-        conclusion: "",
-      },
-    ]);
-    setActivePracticalIndex(practicals.length);
-  };
+  const removeOutput = useCallback(
+    (practicalIndex: number, outputIndex: number) => {
+      updatePractical(practicalIndex, (p) => ({
+        ...p,
+        outputs: p.outputs.filter((_, oIndex) => oIndex !== outputIndex),
+      }));
+    },
+    [updatePractical]
+  );
 
-  const removePractical = (index: number) => {
-    const newPracticals = practicals.filter((_, i) => i !== index);
-    setPracticals(newPracticals);
-    if (activePracticalIndex >= newPracticals.length) {
-      setActivePracticalIndex(Math.max(0, newPracticals.length - 1));
-    }
-  };
+  const addPractical = useCallback(() => {
+    setPracticals((prev) => {
+      const newPractical = createPractical(String(prev.length + 1));
+      setActivePracticalIndex(prev.length);
+      return [...prev, newPractical];
+    });
+  }, []);
+
+  const removePractical = useCallback((index: number) => {
+    setPracticals((prev) => {
+      const newPracticals = prev.filter((_, i) => i !== index);
+      setActivePracticalIndex((activeIdx) =>
+        activeIdx >= newPracticals.length
+          ? Math.max(0, newPracticals.length - 1)
+          : activeIdx
+      );
+      return newPracticals;
+    });
+  }, []);
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
@@ -446,7 +449,10 @@ export default function DocumentEditor() {
               </div>
             </div>
             <div className="relative flex-1 overflow-hidden">
-              <DocumentPreview studentData={formData} practicals={practicals} />
+              <DocumentPreview
+                studentData={debouncedFormData}
+                practicals={debouncedPracticals}
+              />
             </div>
           </aside>
         </main>
