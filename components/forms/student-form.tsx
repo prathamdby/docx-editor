@@ -1,7 +1,7 @@
 "use client";
 
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldLabel } from "@/components/ui/field-label";
 import { User, Hash, BookOpen } from "lucide-react";
 import { memo } from "react";
 import type { StudentData } from "@/app/types";
@@ -19,13 +19,9 @@ export const StudentForm = memo(function StudentForm({
     <div className="space-y-6">
       <div className="grid gap-6 sm:grid-cols-2">
         <div className="space-y-2">
-          <Label
-            htmlFor="name"
-            className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-          >
-            <User className="h-3 w-3" />
+          <FieldLabel htmlFor="name" icon={User}>
             Full Name
-          </Label>
+          </FieldLabel>
           <Input
             id="name"
             name="name"
@@ -37,13 +33,9 @@ export const StudentForm = memo(function StudentForm({
           />
         </div>
         <div className="space-y-2">
-          <Label
-            htmlFor="rollNo"
-            className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-          >
-            <Hash className="h-3 w-3" />
+          <FieldLabel htmlFor="rollNo" icon={Hash}>
             Roll Number
-          </Label>
+          </FieldLabel>
           <Input
             id="rollNo"
             name="rollNo"
@@ -56,13 +48,9 @@ export const StudentForm = memo(function StudentForm({
         </div>
       </div>
       <div className="space-y-2">
-        <Label
-          htmlFor="course"
-          className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-        >
-          <BookOpen className="h-3 w-3" />
+        <FieldLabel htmlFor="course" icon={BookOpen}>
           Course ID
-        </Label>
+        </FieldLabel>
         <Input
           id="course"
           name="course"

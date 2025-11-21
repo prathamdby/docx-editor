@@ -20,35 +20,7 @@ import { PracticalForm } from "@/components/forms/practical-form";
 import { DocumentPreview } from "@/components/document-preview";
 import { Question, Practical, StudentData } from "./types";
 import { useDebounced } from "@/hooks/use-debounced";
-
-function generateId(): string {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
-  return Math.random().toString(36).slice(2);
-}
-
-function createQuestion(number: string): Question {
-  return {
-    id: generateId(),
-    number,
-    questionText: "",
-    code: "",
-  };
-}
-
-function createPractical(practicalNo: string): Practical {
-  return {
-    practicalNo,
-    aim: "",
-    questions: [createQuestion("1")],
-    outputs: [],
-    conclusion: "",
-  };
-}
+import { createQuestion, createPractical } from "@/lib/factories";
 
 export default function DocumentEditor() {
   const [isGenerating, setIsGenerating] = useState(false);

@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldLabel } from "@/components/ui/field-label";
 import { ImageIcon, X, UploadCloud } from "lucide-react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -26,10 +26,9 @@ export const OutputGallery = memo(function OutputGallery({
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
-        <Label className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
-          <ImageIcon className="h-3 w-3" />
+        <FieldLabel icon={ImageIcon} className="mb-0">
           Artifacts
-        </Label>
+        </FieldLabel>
         <span className="font-mono text-[10px] text-muted-foreground">
           [{outputs.length}/3]
         </span>

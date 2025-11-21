@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldLabel } from "@/components/ui/field-label";
 import { Textarea } from "@/components/ui/textarea";
 import { X, Code, HelpCircle } from "lucide-react";
 import { motion } from "framer-motion";
@@ -33,12 +33,12 @@ export const QuestionForm = memo(function QuestionForm({
       <Card className="border-border bg-card/50 p-4 transition-colors hover:bg-card/80">
         <div className="mb-4 flex items-start justify-between gap-4">
           <div className="w-full max-w-[120px]">
-            <Label
+            <FieldLabel
               htmlFor="question-number"
-              className="mb-1.5 block text-[10px] font-bold uppercase text-muted-foreground"
+              className="mb-1.5 block text-[10px]"
             >
               ID
-            </Label>
+            </FieldLabel>
             <Input
               id="question-number"
               value={question.number}
@@ -62,13 +62,9 @@ export const QuestionForm = memo(function QuestionForm({
 
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label
-              htmlFor="question-text"
-              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-            >
-              <HelpCircle className="h-3 w-3" />
+            <FieldLabel htmlFor="question-text" icon={HelpCircle}>
               Problem Statement
-            </Label>
+            </FieldLabel>
             <Textarea
               id="question-text"
               value={question.questionText}
@@ -79,13 +75,9 @@ export const QuestionForm = memo(function QuestionForm({
             />
           </div>
           <div className="space-y-2">
-            <Label
-              htmlFor="question-code"
-              className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-            >
-              <Code className="h-3 w-3" />
+            <FieldLabel htmlFor="question-code" icon={Code}>
               Implementation
-            </Label>
+            </FieldLabel>
             <Textarea
               id="question-code"
               value={question.code}
