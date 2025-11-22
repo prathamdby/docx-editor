@@ -3,26 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldLabel } from "@/components/ui/field-label";
 import { Textarea } from "@/components/ui/textarea";
 import { Plus, Trash2, Book, Target, FileText } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { memo } from "react";
 import { QuestionForm } from "./question-form";
 import { OutputGallery } from "./output-gallery";
-
-interface Question {
-  number: string;
-  questionText: string;
-  code: string;
-}
-
-interface Practical {
-  practicalNo: string;
-  aim: string;
-  questions: Question[];
-  outputs: File[];
-  conclusion: string;
-}
+import type { Practical, Question } from "@/app/types";
 
 interface PracticalFormProps {
   practical: Practical;
@@ -32,7 +20,7 @@ interface PracticalFormProps {
   ) => void;
   onQuestionChange: (
     questionIndex: number,
-    field: keyof Question,
+    field: keyof Omit<Question, "id">,
     value: string
   ) => void;
   onAddQuestion: () => void;
@@ -43,7 +31,7 @@ interface PracticalFormProps {
   canRemove: boolean;
 }
 
-export function PracticalForm({
+export const PracticalForm = memo(function PracticalForm({
   practical,
   onPracticalChange,
   onQuestionChange,
@@ -88,13 +76,9 @@ export function PracticalForm({
         <div className="space-y-6 p-6">
           <div className="grid gap-6 sm:grid-cols-4">
             <div className="sm:col-span-1">
-              <Label
-                htmlFor="practicalNo"
-                className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-              >
-                <Book className="h-3 w-3" />
+              <FieldLabel htmlFor="practicalNo" icon={Book} className="mb-2">
                 ID
-              </Label>
+              </FieldLabel>
               <Input
                 id="practicalNo"
                 value={practical.practicalNo}
@@ -106,13 +90,9 @@ export function PracticalForm({
               />
             </div>
             <div className="sm:col-span-3">
-              <Label
-                htmlFor="aim"
-                className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-              >
-                <Target className="h-3 w-3" />
+              <FieldLabel htmlFor="aim" icon={Target} className="mb-2">
                 Objective
-              </Label>
+              </FieldLabel>
               <Input
                 id="aim"
                 value={practical.aim}
@@ -127,9 +107,7 @@ export function PracticalForm({
           {/* Questions Section */}
           <div className="space-y-4 rounded-md border border-dashed border-border bg-secondary/20 p-4">
             <div className="flex items-center justify-between">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">
-                Query_Stack
-              </Label>
+              <FieldLabel className="mb-0">Query_Stack</FieldLabel>
               <Button
                 type="button"
                 variant="outline"
@@ -145,7 +123,7 @@ export function PracticalForm({
               <AnimatePresence mode="popLayout">
                 {practical.questions.map((question, index) => (
                   <QuestionForm
-                    key={index}
+                    key={question.id}
                     question={question}
                     onQuestionChange={(field, value) =>
                       onQuestionChange(index, field, value)
@@ -167,13 +145,9 @@ export function PracticalForm({
 
           {/* Conclusion Section */}
           <div>
-            <Label
-              htmlFor="conclusion"
-              className="mb-2 flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground"
-            >
-              <FileText className="h-3 w-3" />
+            <FieldLabel htmlFor="conclusion" icon={FileText} className="mb-2">
               Analysis
-            </Label>
+            </FieldLabel>
             <Textarea
               id="conclusion"
               value={practical.conclusion}
@@ -187,4 +161,4 @@ export function PracticalForm({
       </Card>
     </motion.div>
   );
-}
+});
