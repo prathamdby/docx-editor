@@ -288,7 +288,7 @@ When you:
   - Section order,
   - Section labels,
   - Formatting semantics (e.g., underlines, page breaks)
-  must be reflected in **both**:
+    must be reflected in **both**:
   - `app/actions.ts` (DOCX generation).
   - `components/document-preview.tsx` (on-screen preview).
 
@@ -549,5 +549,3 @@ Each of these changes should:
 - Touch a small, well-defined surface area.
 - Respect the contracts listed in this document.
 - Be straightforward to test manually in the app.
-
-
