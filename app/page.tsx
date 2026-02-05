@@ -295,6 +295,9 @@ export default function DocumentEditor() {
         />
         <Header onImport={handleImportClick} isImporting={isImporting} />
 
+        {/* Spacer for fixed header */}
+        <div className="h-14 flex-shrink-0" />
+
         {/* Import Error Banner */}
         {importError && (
           <div className="border-b border-destructive/50 bg-destructive/10 px-6 py-2 text-xs text-destructive">
@@ -303,7 +306,7 @@ export default function DocumentEditor() {
         )}
 
         {/* Main Workspace */}
-        <main className="flex flex-1 overflow-hidden pt-14">
+        <main className="flex flex-1 overflow-hidden">
           {/* LEFT SIDEBAR: Project Explorer */}
           <aside className="flex w-80 flex-col border-r border-border bg-card/30 backdrop-blur-sm">
             <div className="flex-1 space-y-8 overflow-y-auto p-4">
