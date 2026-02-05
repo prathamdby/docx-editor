@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Plus,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Header } from "@/components/header";
-import { generateDocument } from "./actions";
+import { generateDocument, importDocument } from "./actions";
 import { StudentForm } from "@/components/forms/student-form";
 import { PracticalForm } from "@/components/forms/practical-form";
 import { DocumentPreview } from "@/components/document-preview";
@@ -25,6 +25,9 @@ import { createQuestion, createPractical } from "@/lib/factories";
 export default function DocumentEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activePracticalIndex, setActivePracticalIndex] = useState(0);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<StudentData>({
     name: "",
@@ -211,6 +214,56 @@ export default function DocumentEditor() {
     });
   }, []);
 
+  const handleImportClick = useCallback(() => {
+    importInputRef.current?.click();
+  }, []);
+
+  const handleImportFile = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      setIsImporting(true);
+      setImportError(null);
+
+      const formDataObj = new FormData();
+      formDataObj.append("file", file);
+
+      try {
+        const result = await importDocument(formDataObj);
+
+        if (!result.success) {
+          setImportError(result.error || "Import failed");
+          setIsImporting(false);
+          return;
+        }
+
+        // Log warnings to console
+        if (result.warnings.length > 0) {
+          console.warn("Import warnings:", result.warnings);
+        }
+
+        // Convert to Practical[] with empty File[] outputs
+        const importedPracticals: Practical[] = result.practicals.map((p) => ({
+          ...p,
+          outputs: [],
+        }));
+
+        setPracticals(importedPracticals);
+        setActivePracticalIndex(0);
+      } catch (err) {
+        setImportError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
+      } finally {
+        setIsImporting(false);
+        // Reset file input for re-import
+        e.target.value = "";
+      }
+    },
+    []
+  );
+
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* MOBILE RESTRICTION SCREEN */}
@@ -233,7 +286,21 @@ export default function DocumentEditor() {
 
       {/* DESKTOP APP (HIDDEN ON MOBILE) */}
       <div className="hidden h-full flex-col lg:flex">
-        <Header />
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".docx,.pdf"
+          className="hidden"
+          onChange={handleImportFile}
+        />
+        <Header onImport={handleImportClick} isImporting={isImporting} />
+
+        {/* Import Error Banner */}
+        {importError && (
+          <div className="border-b border-destructive/50 bg-destructive/10 px-6 py-2 text-xs text-destructive">
+            <span className="font-bold">Import Error:</span> {importError}
+          </div>
+        )}
 
         {/* Main Workspace */}
         <main className="flex flex-1 overflow-hidden pt-14">
