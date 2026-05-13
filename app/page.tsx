@@ -175,7 +175,7 @@ export default function DocumentEditor() {
       const files = Array.from(e.target.files || []);
       updatePractical(practicalIndex, (p) => ({
         ...p,
-        outputs: [...p.outputs, ...files].slice(0, 3),
+        outputs: [...p.outputs, ...files].slice(0, 2),
       }));
     },
     [updatePractical]
