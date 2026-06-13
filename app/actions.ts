@@ -221,13 +221,12 @@ export async function importDocument(
 
     return result;
   } catch (err) {
+    console.error("Failed to parse imported file:", err);
     return {
       success: false,
       practicals: [],
       warnings: [],
-      error: `Failed to parse file: ${
-        err instanceof Error ? err.message : "Unknown error"
-      }`,
+      error: "Failed to parse file. Please check the file format and try again.",
     };
   }
 }
