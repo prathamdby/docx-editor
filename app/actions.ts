@@ -181,6 +181,27 @@ export async function importDocument(
       };
     }
 
+    // Validate file type
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/pdf",
+    ];
+    const allowedExtensions = [".docx", ".pdf"];
+    const fileName = file.name.toLowerCase();
+    const hasAllowedExtension = allowedExtensions.some((ext) =>
+      fileName.endsWith(ext)
+    );
+    const hasAllowedMime =
+      file.type === "" || allowedTypes.includes(file.type);
+    if (!hasAllowedExtension || !hasAllowedMime) {
+      return {
+        success: false,
+        practicals: [],
+        warnings: [],
+        error: "Invalid file type. Only .docx and .pdf files are supported.",
+      };
+    }
+
     const buffer = Buffer.from(await file.arrayBuffer());
 
     // Use callback-based API to get text directly
