@@ -27,6 +27,7 @@ export default function DocumentEditor() {
   const [activePracticalIndex, setActivePracticalIndex] = useState(0);
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
+  const [importWarnings, setImportWarnings] = useState<string[]>([]);
   const importInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<StudentData>({
@@ -248,6 +249,7 @@ export default function DocumentEditor() {
 
       setIsImporting(true);
       setImportError(null);
+      setImportWarnings([]);
 
       const formDataObj = new FormData();
       formDataObj.append("file", file);
@@ -261,9 +263,9 @@ export default function DocumentEditor() {
           return;
         }
 
-        // Log warnings to console
+        // Surface warnings in UI
         if (result.warnings.length > 0) {
-          console.warn("Import warnings:", result.warnings);
+          setImportWarnings(result.warnings);
         }
 
         // Convert to Practical[] with empty File[] outputs
@@ -325,6 +327,18 @@ export default function DocumentEditor() {
         {importError && (
           <div className="border-b border-destructive/50 bg-destructive/10 px-6 py-2 text-xs text-destructive">
             <span className="font-bold">Import Error:</span> {importError}
+          </div>
+        )}
+
+        {/* Import Warnings Banner */}
+        {importWarnings.length > 0 && (
+          <div className="border-b border-amber-500/50 bg-amber-500/10 px-6 py-2 text-xs text-amber-600 dark:text-amber-400">
+            <span className="font-bold">Import Warnings:</span>
+            <ul className="mt-1 list-inside list-disc">
+              {importWarnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
           </div>
         )}
 
