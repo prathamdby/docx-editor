@@ -12,6 +12,245 @@ import {
   PageBreak,
 } from "docx";
 import { Packer } from "docx";
+import officeParser from "officeparser";
+import type { Practical, Question } from "./types";
+import { generateId } from "@/lib/factories";
+
+export type ImportResult = {
+  success: boolean;
+  practicals: Array<Omit<Practical, "outputs"> & { outputs: never[] }>;
+  warnings: string[];
+  error?: string;
+};
+
+function createFallbackPractical(
+  text: string,
+  warnings?: string[]
+): Omit<Practical, "outputs"> & { outputs: never[] } {
+  const maxAim = 500;
+  if (text.length > maxAim) {
+    warnings?.push(
+      `Text exceeds ${maxAim} characters; content has been split across aim and code fields.`
+    );
+  }
+  return {
+    practicalNo: "1",
+    aim: text.slice(0, maxAim).trim(),
+    questions: [
+      {
+        id: generateId(),
+        number: "1",
+        questionText: "",
+        code: text.length > maxAim ? text.slice(maxAim).trim() : "",
+      },
+    ],
+    outputs: [],
+    conclusion: "Imported document — please edit and organize content.",
+  };
+}
+
+function parseDocumentText(text: string): ImportResult {
+  const practicals: Array<Omit<Practical, "outputs"> & { outputs: never[] }> =
+    [];
+  const warnings: string[] = [];
+
+  // Split by PRACTICAL No. to get individual practicals
+  const practicalRegex = /PRACTICAL\s+No\.?\s*(\d+)/gi;
+  const practicalMatches = [...text.matchAll(practicalRegex)];
+
+  if (practicalMatches.length === 0) {
+    const fallbackWarnings: string[] = [
+      "Could not detect document structure. Imported as raw text — please reorganize.",
+    ];
+    return {
+      success: true,
+      practicals: [createFallbackPractical(text, fallbackWarnings)],
+      warnings: fallbackWarnings,
+    };
+  }
+
+  // Extract each practical section
+  for (let i = 0; i < practicalMatches.length; i++) {
+    const match = practicalMatches[i];
+    const practicalNo = match[1];
+    const startIdx = match.index!;
+    const endIdx =
+      i < practicalMatches.length - 1
+        ? practicalMatches[i + 1].index!
+        : text.length;
+    const practicalText = text.slice(startIdx, endIdx);
+
+    // Extract AIM
+    const aimMatch = practicalText.match(
+      /AIM:\s*([\s\S]*?)(?=Question\s+\d+:|OUTPUT:|CONCLUSION:|$)/i
+    );
+    const aim = aimMatch ? aimMatch[1].trim() : "";
+
+    // Extract CONCLUSION
+    const conclusionMatch = practicalText.match(
+      /CONCLUSION:\s*([\s\S]*?)(?=PRACTICAL\s+No\.?\s*\d+|$)/i
+    );
+    const conclusion = conclusionMatch ? conclusionMatch[1].trim() : "";
+
+    // Extract questions
+    const questions: Question[] = [];
+    const questionRegex =
+      /Question\s+(\d+):\s*([\s\S]*?)(?=Code:|Question\s+\d+:|OUTPUT:|CONCLUSION:|$)/gi;
+    const questionMatches = [...practicalText.matchAll(questionRegex)];
+
+    for (const qMatch of questionMatches) {
+      const questionNumber = qMatch[1];
+      const questionText = qMatch[2].trim();
+
+      // Extract code for this question - look for Code: after the question
+      let codeBlock = "";
+      const questionEndIdx = qMatch.index! + qMatch[0].length;
+      const nextQuestionMatch = practicalText
+        .slice(questionEndIdx)
+        .match(/Question\s+\d+:/i);
+      const codeSectionEnd = nextQuestionMatch
+        ? questionEndIdx + nextQuestionMatch.index!
+        : practicalText.length;
+      const codeSection = practicalText.slice(questionEndIdx, codeSectionEnd);
+
+      const codeMatch = codeSection.match(
+        /Code:\s*([\s\S]*?)(?=Question\s+\d+:|OUTPUT:|CONCLUSION:|$)/i
+      );
+      if (codeMatch) {
+        codeBlock = codeMatch[1].trim();
+      }
+
+      questions.push({
+        id: generateId(),
+        number: questionNumber,
+        questionText,
+        code: codeBlock,
+      });
+    }
+
+    // If no questions found, add a default empty one
+    if (questions.length === 0) {
+      questions.push({
+        id: generateId(),
+        number: "1",
+        questionText: "",
+        code: "",
+      });
+      warnings.push(
+        `Practical ${practicalNo}: No questions detected, added empty question.`
+      );
+    }
+
+    practicals.push({
+      practicalNo,
+      aim,
+      questions,
+      outputs: [],
+      conclusion,
+    });
+  }
+
+  return {
+    success: true,
+    practicals,
+    warnings,
+  };
+}
+
+export async function importDocument(
+  formData: FormData
+): Promise<ImportResult> {
+  try {
+    const file = formData.get("file") as File;
+    if (!file || file.size === 0) {
+      return {
+        success: false,
+        practicals: [],
+        warnings: [],
+        error: "No file provided",
+      };
+    }
+
+    // Size limit: 10MB
+    if (file.size > 10 * 1024 * 1024) {
+      return {
+        success: false,
+        practicals: [],
+        warnings: [],
+        error: "File too large (max 10MB)",
+      };
+    }
+
+    // Validate file type
+    const allowedTypes = [
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/pdf",
+    ];
+    const allowedExtensions = [".docx", ".pdf"];
+    const fileName = file.name.toLowerCase();
+    const hasAllowedExtension = allowedExtensions.some((ext) =>
+      fileName.endsWith(ext)
+    );
+    const hasAllowedMime =
+      file.type === "" || allowedTypes.includes(file.type);
+    if (!hasAllowedExtension || !hasAllowedMime) {
+      return {
+        success: false,
+        practicals: [],
+        warnings: [],
+        error: "Invalid file type. Only .docx and .pdf files are supported.",
+      };
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+
+    // Use callback-based API to get text directly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const text = await new Promise<string>((resolve, reject) => {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (officeParser as any).parseOffice(
+        buffer,
+        (data: string, err: Error | null) => {
+          if (err) {
+            reject(err);
+          } else {
+            resolve(data);
+          }
+        }
+      );
+    });
+
+    const result = parseDocumentText(text);
+
+    // Validation: ensure we got meaningful content
+    if (
+      result.practicals.length === 0 ||
+      result.practicals.every(
+        (p) => !p.aim && p.questions.every((q) => !q.questionText && !q.code)
+      )
+    ) {
+      // Fallback: import as raw text
+      const fallbackWarnings: string[] = [
+        "Could not detect document structure. Imported as raw text — please reorganize.",
+      ];
+      return {
+        success: true,
+        practicals: [createFallbackPractical(text, fallbackWarnings)],
+        warnings: fallbackWarnings,
+      };
+    }
+
+    return result;
+  } catch (err) {
+    console.error("Failed to parse imported file:", err);
+    return {
+      success: false,
+      practicals: [],
+      warnings: [],
+      error: "Failed to parse file. Please check the file format and try again.",
+    };
+  }
+}
 
 export async function generateDocument(formData: FormData) {
   const name = formData.get("name") as string;

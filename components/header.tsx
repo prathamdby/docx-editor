@@ -1,9 +1,15 @@
 "use client";
 
-import { Terminal } from "lucide-react";
+import { Terminal, Upload } from "lucide-react";
 import { motion } from "framer-motion";
+import { Button } from "@/components/ui/button";
 
-export const Header = () => {
+interface HeaderProps {
+  onImport?: () => void;
+  isImporting?: boolean;
+}
+
+export const Header = ({ onImport, isImporting }: HeaderProps) => {
   return (
     <motion.header
       initial={{ y: -20, opacity: 0 }}
@@ -25,8 +31,20 @@ export const Header = () => {
           </div>
         </div>
 
-        <div className="hidden items-center gap-6 sm:flex">
-          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+        <div className="flex items-center gap-4">
+          {onImport && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onImport}
+              disabled={isImporting}
+              className="h-8 text-xs"
+            >
+              <Upload className="mr-2 h-3.5 w-3.5" />
+              {isImporting ? "Importing..." : "Import"}
+            </Button>
+          )}
+          <div className="hidden items-center gap-2 text-xs text-muted-foreground sm:flex">
             <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-primary" />
             <span>SYSTEM_ONLINE</span>
           </div>

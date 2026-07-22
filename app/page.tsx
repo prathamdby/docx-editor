@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Plus,
@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { Header } from "@/components/header";
-import { generateDocument } from "./actions";
+import { generateDocument, importDocument } from "./actions";
 import { StudentForm } from "@/components/forms/student-form";
 import { PracticalForm } from "@/components/forms/practical-form";
 import { DocumentPreview } from "@/components/document-preview";
@@ -25,6 +25,10 @@ import { createQuestion, createPractical } from "@/lib/factories";
 export default function DocumentEditor() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [activePracticalIndex, setActivePracticalIndex] = useState(0);
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState<string | null>(null);
+  const [importWarnings, setImportWarnings] = useState<string[]>([]);
+  const importInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState<StudentData>({
     name: "",
@@ -211,6 +215,80 @@ export default function DocumentEditor() {
     });
   }, []);
 
+  const handleImportClick = useCallback(() => {
+    importInputRef.current?.click();
+  }, []);
+
+  const handleImportFile = useCallback(
+    async (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (!file) return;
+
+      // Confirm before overwriting existing work
+      const hasContent =
+        formData.name ||
+        formData.rollNo ||
+        formData.course ||
+        practicals.some(
+          (p) =>
+            p.aim ||
+            p.conclusion ||
+            p.questions.some((q) => q.questionText || q.code) ||
+            p.outputs.length > 0
+        );
+
+      if (hasContent) {
+        const confirmed = window.confirm(
+          "Importing will replace all current work. Continue?"
+        );
+        if (!confirmed) {
+          e.target.value = "";
+          return;
+        }
+      }
+
+      setIsImporting(true);
+      setImportError(null);
+      setImportWarnings([]);
+
+      const formDataObj = new FormData();
+      formDataObj.append("file", file);
+
+      try {
+        const result = await importDocument(formDataObj);
+
+        if (!result.success) {
+          setImportError(result.error || "Import failed");
+          setIsImporting(false);
+          return;
+        }
+
+        // Surface warnings in UI
+        if (result.warnings.length > 0) {
+          setImportWarnings(result.warnings);
+        }
+
+        // Convert to Practical[] with empty File[] outputs
+        const importedPracticals: Practical[] = result.practicals.map((p) => ({
+          ...p,
+          outputs: [],
+        }));
+
+        setPracticals(importedPracticals);
+        setActivePracticalIndex(0);
+      } catch (err) {
+        setImportError(
+          err instanceof Error ? err.message : "An unexpected error occurred"
+        );
+      } finally {
+        setIsImporting(false);
+        // Reset file input for re-import
+        e.target.value = "";
+      }
+    },
+    []
+  );
+
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden bg-background font-sans text-foreground selection:bg-primary selection:text-primary-foreground">
       {/* MOBILE RESTRICTION SCREEN */}
@@ -233,10 +311,39 @@ export default function DocumentEditor() {
 
       {/* DESKTOP APP (HIDDEN ON MOBILE) */}
       <div className="hidden h-full flex-col lg:flex">
-        <Header />
+        <input
+          ref={importInputRef}
+          type="file"
+          accept=".docx,.pdf"
+          className="hidden"
+          onChange={handleImportFile}
+        />
+        <Header onImport={handleImportClick} isImporting={isImporting} />
+
+        {/* Spacer for fixed header */}
+        <div className="h-14 flex-shrink-0" />
+
+        {/* Import Error Banner */}
+        {importError && (
+          <div className="border-b border-destructive/50 bg-destructive/10 px-6 py-2 text-xs text-destructive">
+            <span className="font-bold">Import Error:</span> {importError}
+          </div>
+        )}
+
+        {/* Import Warnings Banner */}
+        {importWarnings.length > 0 && (
+          <div className="border-b border-amber-500/50 bg-amber-500/10 px-6 py-2 text-xs text-amber-600 dark:text-amber-400">
+            <span className="font-bold">Import Warnings:</span>
+            <ul className="mt-1 list-inside list-disc">
+              {importWarnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Main Workspace */}
-        <main className="flex flex-1 overflow-hidden pt-14">
+        <main className="flex flex-1 overflow-hidden">
           {/* LEFT SIDEBAR: Project Explorer */}
           <aside className="flex w-80 flex-col border-r border-border bg-card/30 backdrop-blur-sm">
             <div className="flex-1 space-y-8 overflow-y-auto p-4">
