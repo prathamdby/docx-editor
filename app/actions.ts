@@ -24,17 +24,24 @@ export type ImportResult = {
 };
 
 function createFallbackPractical(
-  text: string
+  text: string,
+  warnings?: string[]
 ): Omit<Practical, "outputs"> & { outputs: never[] } {
+  const maxAim = 500;
+  if (text.length > maxAim) {
+    warnings?.push(
+      `Text exceeds ${maxAim} characters; content has been split across aim and code fields.`
+    );
+  }
   return {
     practicalNo: "1",
-    aim: text.slice(0, 500).trim(),
+    aim: text.slice(0, maxAim).trim(),
     questions: [
       {
         id: generateId(),
         number: "1",
         questionText: "",
-        code: text.length > 500 ? text.slice(500).trim() : "",
+        code: text.length > maxAim ? text.slice(maxAim).trim() : "",
       },
     ],
     outputs: [],
@@ -52,12 +59,13 @@ function parseDocumentText(text: string): ImportResult {
   const practicalMatches = [...text.matchAll(practicalRegex)];
 
   if (practicalMatches.length === 0) {
+    const fallbackWarnings: string[] = [
+      "Could not detect document structure. Imported as raw text — please reorganize.",
+    ];
     return {
       success: true,
-      practicals: [createFallbackPractical(text)],
-      warnings: [
-        "Could not detect document structure. Imported as raw text — please reorganize.",
-      ],
+      practicals: [createFallbackPractical(text, fallbackWarnings)],
+      warnings: fallbackWarnings,
     };
   }
 
@@ -201,12 +209,13 @@ export async function importDocument(
       )
     ) {
       // Fallback: import as raw text
+      const fallbackWarnings: string[] = [
+        "Could not detect document structure. Imported as raw text — please reorganize.",
+      ];
       return {
         success: true,
-        practicals: [createFallbackPractical(text)],
-        warnings: [
-          "Could not detect document structure. Imported as raw text — please reorganize.",
-        ],
+        practicals: [createFallbackPractical(text, fallbackWarnings)],
+        warnings: fallbackWarnings,
       };
     }
 
