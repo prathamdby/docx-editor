@@ -223,6 +223,29 @@ export default function DocumentEditor() {
       const file = e.target.files?.[0];
       if (!file) return;
 
+      // Confirm before overwriting existing work
+      const hasContent =
+        formData.name ||
+        formData.rollNo ||
+        formData.course ||
+        practicals.some(
+          (p) =>
+            p.aim ||
+            p.conclusion ||
+            p.questions.some((q) => q.questionText || q.code) ||
+            p.outputs.length > 0
+        );
+
+      if (hasContent) {
+        const confirmed = window.confirm(
+          "Importing will replace all current work. Continue?"
+        );
+        if (!confirmed) {
+          e.target.value = "";
+          return;
+        }
+      }
+
       setIsImporting(true);
       setImportError(null);
 
