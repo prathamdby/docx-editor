@@ -14,6 +14,7 @@ import {
 import { Packer } from "docx";
 import officeParser from "officeparser";
 import type { Practical, Question } from "./types";
+import { generateId } from "@/lib/factories";
 
 export type ImportResult = {
   success: boolean;
@@ -21,16 +22,6 @@ export type ImportResult = {
   warnings: string[];
   error?: string;
 };
-
-function generateId(): string {
-  if (
-    typeof crypto !== "undefined" &&
-    typeof crypto.randomUUID === "function"
-  ) {
-    return crypto.randomUUID();
-  }
-  return Math.random().toString(36).slice(2);
-}
 
 function createFallbackPractical(
   text: string
